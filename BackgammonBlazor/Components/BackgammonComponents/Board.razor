@@ -1,0 +1,62 @@
+﻿@using BackgammonBlazor.Helpers
+@using BackgammonBlazor.Models
+@rendermode InteractiveServer
+
+<div>
+    @RenderBoard
+</div>
+
+@code {
+    [Parameter, EditorRequired] public GameModel Game { get; set; } = new();
+    [Parameter, EditorRequired] public EventCallback UpdateBoard { get; set; }
+
+    private RenderFragment RenderBoard => (__builder) =>
+    {
+        <PointLabel ColumnStart="13" ColumnEnd="24" IsAsc=true />
+        <div class="container-board-full">
+            <div class="container-board-half">
+                <div class="container-board-half-border">
+                    <div class="container-board-half-body">
+                        <div class="container-board-quarter">
+                            @for (int i = 0; i < 6; i++)
+                            {
+                                @BoardPoint()
+                            }
+                        </div>
+                        <div class="container-board-quarter">
+                            @for (int i = 0; i < 6; i++)
+                            {
+                                @BoardPoint()
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-board-half">
+                <div class="container-board-half-border">
+                    <div class="container-board-half-body">
+                        <div class="container-board-quarter">
+                            @for (int i = 0; i < 6; i++)
+                            {
+                                @BoardPoint()
+                            }
+                        </div>
+                        <div class="container-board-quarter">
+                            @for (int i = 0; i < 6; i++)
+                            {
+                                @BoardPoint()
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <PointLabel ColumnStart="12" ColumnEnd="1" IsAsc=false />
+    };
+
+    private RenderFragment BoardPoint() => (__builder) =>
+    {
+        int pointNumber = BoardPointBuilder.GetNextPointNumber();
+        <Point Game="@Game" PointNumber="@pointNumber" UpdateBoard="@UpdateBoard" />
+    };
+}

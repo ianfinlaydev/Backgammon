@@ -1,0 +1,116 @@
+﻿@using BackgammonBlazor.Models
+@rendermode InteractiveServer
+
+<div @onclick="Model.Swap">
+    @for (int i = 0; i < Model.Values.Count; i++)
+    {
+        _offset = i;
+        @RenderDice(Model.Values[i])
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public DiceModel Model { get; set; } = new();
+
+    private int _offset;
+
+
+    private RenderFragment RenderDice(int value) => (__builder) =>
+    {
+        switch (value)
+        {
+            case 1:
+                @DiceValue1();
+                break;
+            case 2:
+                @DiceValue2();
+                break;
+            case 3:
+                @DiceValue3();
+                break;
+            case 4:
+                @DiceValue4();
+                break;
+            case 5:
+                @DiceValue5();
+                break;
+            case 6:
+                @DiceValue6();
+                break;
+            default:
+                throw new ArgumentException();
+        }
+    };
+
+    private RenderFragment DiceValue1() => (__builder) =>
+    {
+        <div class="dice first-face" style="left: @($"{_offset * 10}")">
+            <span class="dot"></span>
+        </div>
+    };
+
+    private RenderFragment DiceValue2() => (__builder) =>
+    {
+        <div class="dice second-face" style="left: @($"{_offset * 10}")">
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    };
+
+    private RenderFragment DiceValue3() => (__builder) =>
+    {
+        <div class="dice third-face" style="left: @($"{_offset * 10}")">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    };
+
+    private RenderFragment DiceValue4() => (__builder) =>
+    {
+        <div class="dice fourth-face" style="left: @($"{_offset * 10}")">
+            <div class="column">
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <div class="column">
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    };
+
+    private RenderFragment DiceValue5() => (__builder) =>
+    {
+        <div class="dice fifth-face" style="left: @($"{_offset * 10}")">
+            <div class="column">
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <div class="column">
+                <span class="dot"></span>
+            </div>
+            <div class="column">
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    };
+
+    private RenderFragment DiceValue6() => (__builder) =>
+    {
+        <div class="dice fourth-face" style="left: @($"{_offset * 10}")">
+            <div class="column">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <div class="column">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    };
+}

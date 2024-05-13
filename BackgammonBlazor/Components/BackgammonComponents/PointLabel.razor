@@ -1,0 +1,31 @@
+﻿@rendermode InteractiveServer
+
+<table class="point-label-strip">
+    <tr>
+        <th class="label-filler" />
+        @for(int i = ColumnStart; IsAsc ? i <= ColumnEnd : i >= ColumnEnd; i = IsAsc ? i + 1 : i - 1)
+        {
+            if (IsFillerIndex(i))
+            {
+                <th class="label-filler" />
+                <th class="label-filler" />
+            }
+            <th class="point-label">@i</th>
+        }
+        <th class="label-filler" />
+    </tr>
+</table>
+
+@code {
+    [Parameter, EditorRequired] 
+    public int ColumnStart { get; set; }
+
+    [Parameter, EditorRequired]
+    public int ColumnEnd { get; set; }
+
+    [Parameter, EditorRequired]
+    public bool IsAsc { get; set; }
+
+    private int[] _fillerIndices = new int[] { 19, 6 };
+    private bool IsFillerIndex(int i) => _fillerIndices.Contains(i);
+}

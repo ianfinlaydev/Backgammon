@@ -1,0 +1,16 @@
+﻿.checker {
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.checker-light {
+    background-color: white;
+}
+
+.checker-dark {
+    background-color: black;
+}

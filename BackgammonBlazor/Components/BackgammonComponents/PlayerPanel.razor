@@ -1,0 +1,60 @@
+﻿@using BackgammonBlazor.Helpers
+@using BackgammonBlazor.Models
+@rendermode InteractiveServer
+
+<div>
+    <div>@($"{(Player.PlayerColor == PlayerColor.Light ? "Light" : "Dark")}") Player</div>
+    <div>Pip Count: @(Player.PipCount)</div>
+
+    @if (_showDice)
+    {
+        <Dice Model="Player.Dice" />
+    }
+    else
+    {
+        <button class="btn btn-primary" @onclick="RollDice" hidden="@(_showDice)" disabled="@(IsDisabled())">
+            Roll Dice
+        </button>
+    }
+
+    @if (Player == Game.ActivePlayer && Game.ActiveTurn.HasMoved())
+    {
+        <button class="btn btn-primary" @onclick="UndoMove">Undo</button>
+
+        if (Game.ActiveTurn.IsComplete())
+        {
+            <button class="btn btn-primary" @onclick="ConfirmTurn">Confirm</button>
+        }
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public GameModel Game { get; set; } = new();
+    [Parameter, EditorRequired] public PlayerModel Player { get; set; } = new();
+    [Parameter, EditorRequired] public EventCallback UpdateBoard { get; set; }
+
+    private bool _showDice = false;
+
+    private void RollDice()
+    {
+        Player.RollDice();
+        Game.ActiveTurn.AddDiceValues(Player.Dice.Values);
+        _showDice = true;
+        StateHasChanged();
+    }
+
+    private void UndoMove()
+        => Game.UndoMove();
+
+    private void ConfirmTurn()
+    {
+        Game.CompleteActiveTurn();
+        Game.ChangeActivePlayer();
+        Game.ActiveTurn = new();
+        _showDice = false;
+        UpdateBoard.InvokeAsync();
+    }
+
+    private bool IsDisabled()
+        => Player.PlayerColor != Game.ActivePlayer.PlayerColor;
+}

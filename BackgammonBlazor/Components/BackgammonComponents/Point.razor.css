@@ -1,0 +1,32 @@
+﻿.point-container {
+    position: relative;
+    width: 50px;
+    height: 250px;
+}
+
+.board-point {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    border: solid;
+}
+
+.top-light {
+    border-width: 200px 25px 50px 25px;
+    border-color: rgb(145, 185, 180) transparent transparent transparent;
+}
+
+.top-dark {
+    border-width: 200px 25px 50px 25px;
+    border-color: rgb(70, 120, 100) transparent transparent transparent;
+}
+
+.bottom-light {
+    border-width: 50px 25px 200px 25px;
+    border-color: transparent transparent rgb(145, 185, 180) transparent;
+}
+
+.bottom-dark {
+    border-width: 50px 25px 200px 25px;
+    border-color: transparent transparent rgb(70, 120, 100) transparent;
+}

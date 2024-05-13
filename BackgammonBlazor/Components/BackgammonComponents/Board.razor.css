@@ -1,0 +1,33 @@
+﻿.container-board-full {
+    display: flex;
+    background-color: rgb(105, 160, 150);
+    width: 656px; 
+    height: 528px; 
+}
+
+.container-board-half {
+    box-sizing: border-box;
+    width: 328px;
+    height: 528px;
+    border: 1px solid black;
+}
+
+.container-board-half-border {
+    box-sizing: border-box;
+    width: 326px;
+    height: 526px;
+    border: 12px solid rgb(135, 100, 90);
+}
+
+.container-board-half-body {
+    box-sizing: border-box;
+    width: 302px;
+    height: 502px;
+    border: 1px solid black;
+}
+
+.container-board-quarter {
+    display: flex;
+    width: 300px;
+    height: 250px;
+}

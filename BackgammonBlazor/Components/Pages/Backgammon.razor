@@ -1,0 +1,26 @@
+﻿@page "/weather"
+@using BackgammonBlazor.Components.BackgammonComponents
+@using BackgammonBlazor.Helpers
+@using BackgammonBlazor.Models
+@using Microsoft.AspNetCore.Components.Rendering
+@rendermode InteractiveServer
+
+<h3>Backgammon</h3>
+
+<PlayerPanel Game="@Game" Player="@Game.GetPlayer(PlayerColor.Light)" UpdateBoard="@(() => Update(Game, true))" />
+<Board Game="@Game" UpdateBoard="@(() => Update(Game))" />
+<PlayerPanel Game="@Game" Player="@Game.GetPlayer(PlayerColor.Dark)" UpdateBoard="@(() => Update(Game, true))" />
+
+@code {
+    public GameModel Game { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        Game.InitializeGame();
+    }
+
+    private void Update(GameModel game, bool isConfirm = false)
+    {
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,59 @@
+﻿@using BackgammonBlazor.Helpers
+@using BackgammonBlazor.Models
+@rendermode InteractiveServer
+
+<div class="point-container" @onclick="MoveChecker">
+    @RenderBoardPoint()
+    @RenderPointCheckers()
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public GameModel Game { get; set; } = new();
+
+    [Parameter, EditorRequired]
+    public int PointNumber { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback UpdateBoard { get; set; }
+
+    private const int MaxCheckerCapacity = 5;
+
+    private RenderFragment RenderBoardPoint() => (__builder) =>
+    {
+        var css = Game.GetPoint(PointNumber).GetCss();
+
+        <div class="board-point point-layer1 @(css.pointClass)" style="@(css.pointStyle)"></div>
+    };
+
+    private RenderFragment RenderPointCheckers() => (__builder) =>
+    {
+        BoardPointModel point = Game.GetPoint(PointNumber);
+
+        if (!point.HasCheckers())
+        {
+            return;
+        }
+
+        <div class="point-layer2">
+            @for (int i = 0; i < Math.Min(point.Checkers.Count, MaxCheckerCapacity); i++)
+            {
+                <Checker Model="@point.Checkers[i]" Offset="i" />
+            }
+        </div>
+    };
+
+    private void MoveChecker()
+    {
+        //Player does not have any checkers on this point to move
+        if (!Game.ActivePlayer.HasCheckersOnPoint(Game.GetPoint(PointNumber)))
+        {
+            return;
+        }
+
+        if (Game.MakeMove(PointNumber))
+        {
+            UpdateBoard.InvokeAsync();
+        }
+    }
+}

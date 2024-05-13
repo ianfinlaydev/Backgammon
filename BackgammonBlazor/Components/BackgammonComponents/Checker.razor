@@ -1,0 +1,23 @@
+﻿@using BackgammonBlazor.Helpers
+@using BackgammonBlazor.Models
+@rendermode InteractiveServer
+
+@RenderChecker()
+
+@code {
+    [Parameter]
+    public CheckerModel Model { get; set; }
+
+    [Parameter]
+    public int Offset { get; set; }
+
+    private RenderFragment RenderChecker() => (__builder) =>
+    {
+        var css = Model.GetCss(Offset);
+        var numCheckersOnPoint = Model.Point.Checkers.Count;
+
+        <div class="checker @(css.checkerClass)" style="@(css.checkerStyle)">
+            @(Offset == 4 && numCheckersOnPoint > 5 ? $"{numCheckersOnPoint}" : "")
+        </div>
+    };
+}
