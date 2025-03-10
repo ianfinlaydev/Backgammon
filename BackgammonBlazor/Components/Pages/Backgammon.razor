@@ -9,9 +9,9 @@
 
 <h3>Backgammon</h3>
 
-<PlayerPanel GameModel="@GameModel" Player="@GameModel.GetPlayer(PlayerColor.Light)" UpdateBoard="@(() => Update(GameModel, true))" />
-<Board GameModel="@GameModel" UpdateBoard="@(() => Update(GameModel))" />
-<PlayerPanel GameModel="@GameModel" Player="@GameModel.GetPlayer(PlayerColor.Dark)" UpdateBoard="@(() => Update(GameModel, true))" />
+<PlayerPanel GameModel="@GameModel" Player="@GameModel.GetPlayer(PlayerColor.Light)" />
+<Board GameModel="@GameModel" />
+<PlayerPanel GameModel="@GameModel" Player="@GameModel.GetPlayer(PlayerColor.Dark)" />
 
 @code {
     public GameModel GameModel { get; set; } = new();
@@ -36,11 +36,5 @@
 
     public void Dispose(){
         GameEventManager.Unsubscribe(OnGameEventReceived);
-    }
-
-    //TODO: Implement Observer pattern
-    private void Update(GameModel gameModel, bool isConfirm = false)
-    {
-        StateHasChanged();
     }
 }

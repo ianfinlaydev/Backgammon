@@ -10,8 +10,6 @@
     [Parameter, EditorRequired] 
     public GameModel GameModel { get; set; }
 
-    [Parameter, EditorRequired] public EventCallback UpdateBoard { get; set; }
-
     private RenderFragment RenderBoard => (__builder) =>
     {
         <PointLabel ColumnStart="13" ColumnEnd="24" IsAsc=true />
@@ -58,6 +56,6 @@
 
     private RenderFragment BoardPoint() => (__builder) =>
     {
-        <Point GameModel="@GameModel" UpdateBoard="@UpdateBoard" />
+        <Point GameModel="@GameModel" />
     };
 }

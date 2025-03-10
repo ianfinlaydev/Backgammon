@@ -7,6 +7,7 @@ namespace BackgammonBlazor.Models
         //TODO: Change a lot of these properties to private fields with method access
         public List<PlayerModel> Players { get; set; } = [];
 
+        //TODO: Change to Hero and Villain
         public PlayerModel ActivePlayer { get; set; }
 
         public Dictionary<int, BoardPointModel> Points { get; set; } = [];
