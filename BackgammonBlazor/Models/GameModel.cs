@@ -41,8 +41,8 @@ namespace BackgammonBlazor.Models
         public BoardPointModel GetPoint(int pointNumber)
             => Points[pointNumber];
 
-        public BoardPointModel GetPoint(CheckerColor checkerColor)
-            => GetPoint((int)checkerColor);
+        public BoardPointModel GetPoint(PlayerColor playerColor)
+            => GetPoint((int)playerColor);
 
         public void StartNewTurn()
         {
@@ -86,6 +86,10 @@ namespace BackgammonBlazor.Models
             //TODO: Add bearing off logic
 
             //TODO: Add bearing on logic
+            if (Hero.HasCheckersOnBar())
+            {
+
+            }
 
             //Point is made by villain
             if (move.Destination.IsMadeByPlayer(Villain))

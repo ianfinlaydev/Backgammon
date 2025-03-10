@@ -49,29 +49,29 @@ namespace BackgammonBlazor.Helpers
 
         private void InitializeCheckers()
         {
-            foreach (var (pointNumber, numCheckers, checkerColor) in InitialCheckerInfo)
+            foreach (var (pointNumber, numCheckers, playerColor) in InitialCheckerInfo)
             {
                 for (int i = 0; i < numCheckers; i++)
                 {
                     BoardPointModel point = _gameModel.GetPoint(pointNumber);
 
-                    CheckerModel checker = new(_gameModel, point, checkerColor);
+                    CheckerModel checker = new(_gameModel, point, playerColor);
 
                     point.Checkers.Add(checker);
                 }
             }
         }
 
-        private readonly (int pointNumber, int numCheckers, CheckerColor checkerColor)[] InitialCheckerInfo =
+        private readonly (int pointNumber, int numCheckers, PlayerColor checkerColor)[] InitialCheckerInfo =
         [
-            ( 1, 2, CheckerColor.Dark ),
-            ( 6, 5, CheckerColor.Light ),
-            ( 8, 3, CheckerColor.Light ),
-            ( 12, 5, CheckerColor.Dark ),
-            ( 13, 5, CheckerColor.Light ),
-            ( 17, 3, CheckerColor.Dark ),
-            ( 19, 5, CheckerColor.Dark ),
-            ( 24, 2, CheckerColor.Light ),
+            ( 1, 2, PlayerColor.Dark ),
+            ( 6, 5, PlayerColor.Light ),
+            ( 8, 3, PlayerColor.Light ),
+            ( 12, 5, PlayerColor.Dark ),
+            ( 13, 5, PlayerColor.Light ),
+            ( 17, 3, PlayerColor.Dark ),
+            ( 19, 5, PlayerColor.Dark ),
+            ( 24, 2, PlayerColor.Light ),
         ];
     }
 }

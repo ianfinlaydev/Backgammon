@@ -17,7 +17,7 @@ namespace BackgammonBlazor.Models
             => Checkers.Count > 0;
 
         public bool HasCheckersOfPlayer(PlayerModel player)
-            => HasCheckers() && player.Matches(Checkers.First());
+            => HasCheckers() && player.PlayerColor == Checkers.First().PlayerColor;
 
         public bool IsHittable()
             => Checkers.Count == 1;

@@ -1,13 +1,13 @@
 ﻿namespace BackgammonBlazor.Models
 {
-    public class CheckerModel(GameModel gameModel, BoardPointModel point, CheckerColor checkerColor)
+    public class CheckerModel(GameModel gameModel, BoardPointModel point, PlayerColor playerColor)
     {
         #region Public Properties
         public GameModel GameModel { get; set; } = gameModel;
 
         public BoardPointModel Point { get; set; } = point;
 
-        public CheckerColor CheckerColor { get; set; } = checkerColor;
+        public PlayerColor PlayerColor { get; set; } = playerColor;
         #endregion Public Properties
 
         public void MoveChecker(BoardPointModel origin, BoardPointModel destination)
@@ -16,11 +16,5 @@
             origin.Checkers.Remove(this);
             destination.Checkers.Add(this);
         }
-    }
-
-    public enum CheckerColor
-    {
-        Light = 25,
-        Dark = 0,
     }
 }
