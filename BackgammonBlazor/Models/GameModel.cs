@@ -85,10 +85,10 @@ namespace BackgammonBlazor.Models
         {
             //TODO: Add bearing off logic
 
-            //TODO: Add bearing on logic
-            if (Hero.HasCheckersOnBar())
+            //Hero needs to bear on checkers from their bar
+            if (Hero.HasCheckersOnBar() && move.Origin != GetPoint(Hero.PlayerColor))
             {
-
+                return false;
             }
 
             //Point is made by villain

@@ -51,7 +51,7 @@
             }
 
             //Destination has a checker to hit from the opposing player
-            if (Destination.IsHittable() && GetCheckerToMove().CheckerColor != GetHitChecker().CheckerColor)
+            if (Destination.IsHittable() && GetCheckerToMove().PlayerColor != GetHitChecker().PlayerColor)
             {
                 return true;
             }
@@ -80,7 +80,7 @@
             => Destination.Checkers.First();
 
         public BoardPointModel GetBarOfHitChecker()
-            => GameModel.GetPoint(GetHitChecker().CheckerColor);
+            => GameModel.GetPoint(GetHitChecker().PlayerColor);
         #endregion Public Methods
     }
 }

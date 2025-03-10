@@ -19,9 +19,10 @@ namespace BackgammonBlazor.Models
         public bool HasCheckersOnPoint(BoardPointModel point)
             => point.HasCheckersOfPlayer(this);
 
-        //TODO: Below method is incomplete.
         public bool HasCheckersOnBar()
-            => GameModel.GetPoint(PlayerColor);
+            => GameModel
+            .GetPoint(PlayerColor)
+            .HasCheckersOfPlayer(this);
 
         public void SetPipCount()
             => PipCount = GameModel.Checkers
