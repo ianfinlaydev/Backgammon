@@ -25,12 +25,12 @@ namespace BackgammonBlazor.Helpers
         private void InitializePlayers()
         {
             _gameModel.Players.Add(new PlayerModel(_gameModel, PlayerColor.Light));
-
             _gameModel.Players.Add(new PlayerModel(_gameModel, PlayerColor.Dark));
 
             GetRandomPlayer().IsActivePlayer = true;
 
-            _gameModel.ActivePlayer = _gameModel.Players.First(p => p.IsActivePlayer);
+            _gameModel.Hero = _gameModel.Players.First(p => p.IsActivePlayer);
+            _gameModel.Villain = _gameModel.Players.First(p => !p.IsActivePlayer);
         }
 
         private PlayerModel GetRandomPlayer()

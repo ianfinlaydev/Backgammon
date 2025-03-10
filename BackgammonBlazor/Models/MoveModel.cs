@@ -22,7 +22,7 @@
 
         private BoardPointModel GetDestinationPoint(int origin, int value)
             => GameModel.GetPoint(
-                GameModel.ActivePlayer.PlayerColor == PlayerColor.Light ? 
+                GameModel.Hero.PlayerColor == PlayerColor.Light ? 
                 origin - value : 
                 origin + value);
 

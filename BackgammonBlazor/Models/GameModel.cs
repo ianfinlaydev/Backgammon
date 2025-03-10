@@ -8,7 +8,9 @@ namespace BackgammonBlazor.Models
         public List<PlayerModel> Players { get; set; } = [];
 
         //TODO: Change to Hero and Villain
-        public PlayerModel ActivePlayer { get; set; }
+        public PlayerModel Hero { get; set; }
+
+        public PlayerModel Villain { get; set; }
 
         public Dictionary<int, BoardPointModel> Points { get; set; } = [];
 
@@ -32,7 +34,8 @@ namespace BackgammonBlazor.Models
                 player.IsActivePlayer = !player.IsActivePlayer;
             }
 
-            ActivePlayer = Players.First(p => p.IsActivePlayer);
+            Hero = Players.First(p => p.IsActivePlayer);
+            Villain = Players.First(p => !p.IsActivePlayer);
         }
 
         public BoardPointModel GetPoint(int pointNumber)
@@ -59,7 +62,7 @@ namespace BackgammonBlazor.Models
 
         public bool TryMove(BoardPointModel origin)
         {
-            if (!ActivePlayer.HasCheckersOnPoint(origin))
+            if (!Hero.HasCheckersOnPoint(origin))
             {
                 return false;
             }
@@ -85,8 +88,7 @@ namespace BackgammonBlazor.Models
             //TODO: Add bearing on logic
 
             //Point is made by villain
-            var villain = Players.Where(p => p != ActivePlayer).First();
-            if (move.Destination.IsMadeByPlayer(villain))
+            if (move.Destination.IsMadeByPlayer(Villain))
             {
                 return false;
             }

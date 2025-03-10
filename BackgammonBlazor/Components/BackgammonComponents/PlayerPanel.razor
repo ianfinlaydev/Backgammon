@@ -19,7 +19,7 @@
         </button>
     }
 
-    @if (Player == GameModel.ActivePlayer && GameModel.ActiveTurn.HasMoved())
+    @if (Player == GameModel.Hero && GameModel.ActiveTurn.HasMoved())
     {
         <button class="btn btn-primary" @onclick="UndoMove">Undo</button>
 
@@ -66,7 +66,7 @@
     }
 
     private bool IsDisabled()
-        => Player != GameModel.ActivePlayer;
+        => Player != GameModel.Hero;
 
     private string GetPlayerLabelString()
         => $"{(Player.PlayerColor == PlayerColor.Light ? "Light" : "Dark")} Player";
