@@ -1,25 +1,45 @@
 ﻿@page "/weather"
 @using BackgammonBlazor.Components.BackgammonComponents
+@using BackgammonBlazor.GameObserver
 @using BackgammonBlazor.Helpers
 @using BackgammonBlazor.Models
 @using Microsoft.AspNetCore.Components.Rendering
+@inject GameEventManager GameEventManager
 @rendermode InteractiveServer
 
 <h3>Backgammon</h3>
 
-<PlayerPanel Game="@Game" Player="@Game.GetPlayer(PlayerColor.Light)" UpdateBoard="@(() => Update(Game, true))" />
-<Board Game="@Game" UpdateBoard="@(() => Update(Game))" />
-<PlayerPanel Game="@Game" Player="@Game.GetPlayer(PlayerColor.Dark)" UpdateBoard="@(() => Update(Game, true))" />
+<PlayerPanel GameModel="@GameModel" Player="@GameModel.GetPlayer(PlayerColor.Light)" UpdateBoard="@(() => Update(GameModel, true))" />
+<Board GameModel="@GameModel" UpdateBoard="@(() => Update(GameModel))" />
+<PlayerPanel GameModel="@GameModel" Player="@GameModel.GetPlayer(PlayerColor.Dark)" UpdateBoard="@(() => Update(GameModel, true))" />
 
 @code {
-    public GameModel Game { get; set; } = new();
+    public GameModel GameModel { get; set; } = new();
 
     protected override void OnInitialized()
     {
-        Game.InitializeGame();
+        InitializeGame();
+
+        GameEventManager.Subscribe(OnGameEventReceived);
     }
 
-    private void Update(GameModel game, bool isConfirm = false)
+    private void InitializeGame()
+    {
+        GameInitializer _initializer = new();
+        _initializer.InitializeGame(GameModel);
+    }
+
+    private void OnGameEventReceived()
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose(){
+        GameEventManager.Unsubscribe(OnGameEventReceived);
+    }
+
+    //TODO: Implement Observer pattern
+    private void Update(GameModel gameModel, bool isConfirm = false)
     {
         StateHasChanged();
     }

@@ -5,19 +5,26 @@
 @RenderChecker()
 
 @code {
-    [Parameter]
-    public CheckerModel Model { get; set; }
+    [Parameter, EditorRequired]
+    public CheckerModel GameModel { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public int Offset { get; set; }
 
     private RenderFragment RenderChecker() => (__builder) =>
     {
-        var css = Model.GetCss(Offset);
-        var numCheckersOnPoint = Model.Point.Checkers.Count;
+        string cssCheckerClass = GetCheckerClassCss(GameModel.CheckerColor);
+        string cssCheckerStyle = GetCheckerStlyeCss(GameModel.Point.IsTopPoint(), Offset);
+        int numCheckersOnPoint = GameModel.Point.Checkers.Count;
 
-        <div class="checker @(css.checkerClass)" style="@(css.checkerStyle)">
+        <div class="checker @(cssCheckerClass)" style="@(cssCheckerStyle)">
             @(Offset == 4 && numCheckersOnPoint > 5 ? $"{numCheckersOnPoint}" : "")
         </div>
     };
+
+    private string GetCheckerClassCss(CheckerColor color)
+        => color == CheckerColor.Light ? "checker-light" : "checker-dark";
+
+    private string GetCheckerStlyeCss(bool isTopPoint, int offset)
+        => $"{(isTopPoint ? "top" : "bottom")}: {offset * 50}px";
 }

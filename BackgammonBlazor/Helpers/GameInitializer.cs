@@ -3,76 +3,66 @@ using System.Drawing;
 
 namespace BackgammonBlazor.Helpers
 {
-    public static class GameInitializer
+    public class GameInitializer()
     {
-        public static void InitializeGame(this GameModel game)
+        private GameModel _gameModel;
+        private static readonly Random _random = new();
+
+        public void InitializeGame(GameModel gameModel)
         {
-            game.InitializePlayers();
-            game.InitializePoints();
-            game.InitializeCheckers();
+            _gameModel = gameModel;
+
+            InitializeDice();
+            InitializePlayers();
+            InitializeFirstTurn();
+            InitializePoints();
+            InitializeCheckers();
         }
 
-        public static void InitializePlayers(this GameModel game)
-        {
-            game.Players[0] = new PlayerModel
-            {
-                PlayerColor = PlayerColor.Light,
-            };
-            game.Players[1] = new PlayerModel
-            {
-                PlayerColor = PlayerColor.Dark,
-            };
+        private void InitializeDice() 
+            => _gameModel.Dice = new DiceModel(_gameModel);
 
-            PlayerColor firstTurnColor = GetRandomPlayerColor();
-            game.ChangeActivePlayer(firstTurnColor);
+        private void InitializePlayers()
+        {
+            _gameModel.Players.Add(new PlayerModel(_gameModel, PlayerColor.Light));
+
+            _gameModel.Players.Add(new PlayerModel(_gameModel, PlayerColor.Dark));
+
+            GetRandomPlayer().IsActivePlayer = true;
+
+            _gameModel.ActivePlayer = _gameModel.Players.First(p => p.IsActivePlayer);
         }
 
-        private static PlayerColor GetRandomPlayerColor()
-            => new Random().Next(0, 2) == 1 ? 
-            PlayerColor.Light : 
-            PlayerColor.Dark;
+        private PlayerModel GetRandomPlayer()
+            => _gameModel.Players[_random.Next(0, 2)];
 
-        public static void InitializePoints(this GameModel game)
+        private void InitializeFirstTurn()
+            => _gameModel.StartNewTurn();
+
+        private void InitializePoints()
         {
-            //Points 1 - 24
-            for (int i = 1; i <= 24; i++)
+            for (int i = 0; i <= 25; i++)
             {
-                game.AddPoint(i);
+                _gameModel.Points.Add(i, new BoardPointModel(_gameModel, i));
             }
-
-            //Bar Points
-            game.AddPoint(PlayerColor.Light);
-            game.AddPoint(PlayerColor.Dark);
         }
 
-        public static void InitializeCheckers(this GameModel game)
+        private void InitializeCheckers()
         {
-            foreach (var (pointNumber, numCheckers, checkerColor) in InitialCheckers)
+            foreach (var (pointNumber, numCheckers, checkerColor) in InitialCheckerInfo)
             {
                 for (int i = 0; i < numCheckers; i++)
                 {
-                    game.AddChecker(pointNumber, checkerColor);
+                    BoardPointModel point = _gameModel.GetPoint(pointNumber);
+
+                    CheckerModel checker = new(_gameModel, point, checkerColor);
+
+                    point.Checkers.Add(checker);
                 }
             }
         }
 
-        public static void AddPoint(this GameModel game, int pointNumber)
-            => game.Points.Add(pointNumber, new BoardPointModel
-            {
-                PointNumber = pointNumber,
-            });
-
-        public static void AddPoint(this GameModel game, PlayerColor playerColor)
-            => game.AddPoint((int)playerColor);
-
-        public static void AddChecker(this GameModel game, int pointNumber, CheckerColor checkerColor)
-            => game.GetPoint(pointNumber).Checkers.Add(new CheckerModel
-            {
-                Point = game.GetPoint(pointNumber),
-                CheckerColor = checkerColor,
-            });
-
-        private static readonly (int pointNumber, int numCheckers, CheckerColor checkerColor)[] InitialCheckers =
+        private readonly (int pointNumber, int numCheckers, CheckerColor checkerColor)[] InitialCheckerInfo =
         [
             ( 1, 2, CheckerColor.Dark ),
             ( 6, 5, CheckerColor.Light ),

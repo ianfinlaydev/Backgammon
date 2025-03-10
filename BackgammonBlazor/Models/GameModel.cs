@@ -1,23 +1,23 @@
-﻿using BackgammonBlazor.Helpers;
-using Microsoft.AspNetCore.Components;
-using System.ComponentModel.DataAnnotations;
-using System.Drawing;
-
+﻿
 namespace BackgammonBlazor.Models
 {
     public class GameModel
     {
         #region Public Properties
         //TODO: Change a lot of these properties to private fields with method access
+        public List<PlayerModel> Players { get; set; } = [];
+
+        public PlayerModel ActivePlayer { get; set; }
+
         public Dictionary<int, BoardPointModel> Points { get; set; } = [];
 
-        public PlayerModel[] Players { get; set; } = new PlayerModel[2];
+        public List<CheckerModel> Checkers { get; set; } = [];
 
-        public PlayerModel ActivePlayer { get; set; } = new();
+        public DiceModel Dice { get; set; }
 
         public List<TurnModel> Turns { get; set; } = [];
 
-        public TurnModel ActiveTurn { get; set; } = new();
+        public TurnModel ActiveTurn { get; set; }
         #endregion Public Properties
 
         #region Public Methods
@@ -25,10 +25,14 @@ namespace BackgammonBlazor.Models
             => Players.First(p => p.PlayerColor == color);
 
         public void ChangeActivePlayer()
-            => ActivePlayer = Players.First(p => p.PlayerColor != ActivePlayer.PlayerColor);
+        {
+            foreach (var player in Players)
+            {
+                player.IsActivePlayer = !player.IsActivePlayer;
+            }
 
-        public void ChangeActivePlayer(PlayerColor playerColor)
-            => ActivePlayer = Players.First(p => p.PlayerColor == playerColor);
+            ActivePlayer = Players.First(p => p.IsActivePlayer);
+        }
 
         public BoardPointModel GetPoint(int pointNumber)
             => Points[pointNumber];
@@ -36,48 +40,36 @@ namespace BackgammonBlazor.Models
         public BoardPointModel GetPoint(CheckerColor checkerColor)
             => GetPoint((int)checkerColor);
 
-        public void CompleteActiveTurn()
+        public void StartNewTurn()
         {
-            if (!ActiveTurn.IsComplete())
+            ActiveTurn = new(this);
+        }
+
+        public void CompleteTurn()
+        {
+            if (!IsCompleteTurn())
             {
-                throw new ArgumentException("Turn is invalid", nameof(ActiveTurn));
+                return;
             }
 
             Turns.Add(ActiveTurn);
+            ChangeActivePlayer();
         }
 
-        public bool MakeMove(int origin)
+        public bool TryMove(BoardPointModel origin)
         {
-            foreach (var value in ActivePlayer.Dice.Values)
+            if (!ActivePlayer.HasCheckersOnPoint(origin))
             {
-                int destination = ActivePlayer.GetDestinationPointNumber(origin, value);
+                return false;
+            }
 
-                //TODO: Adjust this validation when player is able to bear off
-                //Destination is off the board
-                if (destination < 1 || destination > 24)
+            foreach (var diceValue in Dice.Values)
+            {
+                MoveModel move = new(this, origin, diceValue);
+
+                if (IsValidMove(move))
                 {
-                    continue;
-                }
-
-                var move = new MoveModel
-                {
-                    Origin = GetPoint(origin),
-                    Destination = GetPoint(destination)
-                };
-
-                if (ActivePlayer.CanMakeMove(move))
-                {
-                    ActivePlayer.Dice.Values.Remove(value);
-                    ActiveTurn.AddMove(move);
-
-                    if (move.IsHit())
-                    {
-                        var checker = move.GetHitChecker();
-                        var bar = GetPoint(checker.CheckerColor);
-                        checker.Move(move.Destination, bar);
-                    }
-
-                    move.Origin?.Checkers.FirstOrDefault()?.Move(move.Origin, move.Destination);
+                    ProcessMove(move);
                     return true;
                 }
             }
@@ -85,26 +77,59 @@ namespace BackgammonBlazor.Models
             return false;
         }
 
-        public void UndoMove()
+        private bool IsValidMove(MoveModel move)
         {
-            //TODO: This doesn't work
-            var move = ActiveTurn.UndoMove();
-            UpdatePoints(move);
-        }
+            //TODO: Add bearing off logic
 
-        public void UpdatePoints(MoveModel move)
-        {
-            if (move.IsHit())
+            //TODO: Add bearing on logic
+
+            //Point is made by villain
+            var villain = Players.Where(p => p != ActivePlayer).First();
+            if (move.Destination.IsMadeByPlayer(villain))
             {
-                var checker = move.GetHitChecker();
-                var bar = GetPoint(checker.CheckerColor);
-                checker.Move(move.Destination, bar);
+                return false;
             }
 
-            move.Origin.Checkers.FirstOrDefault()?.Move(move.Origin, move.Destination);
+            return true;
         }
 
-        public bool IsComplete() 
+        public void ProcessMove(MoveModel move)
+        {
+            move.Process();
+
+            ActiveTurn.AddMove(move);
+
+            UpdatePipCounts();
+
+            Dice.UseDiceValue(move.ConsumedDiceValue);
+        }
+
+        public void UndoMove()
+        {
+            //TODO: Error when undoing moves where the undo dice order matters (made points blocking)
+            MoveModel moveToUndo = ActiveTurn.GetLastMove();
+
+            moveToUndo.Reverse().Process();
+
+            ActiveTurn.RemoveLastMove();
+
+            UpdatePipCounts();
+
+            Dice.UnuseDiceValue(moveToUndo.ConsumedDiceValue);
+        }
+
+        private void UpdatePipCounts()
+        {
+            foreach (var player in Players)
+            {
+                player.SetPipCount();
+            }
+        }
+
+        public bool IsCompleteTurn()
+            => Dice.Values.Count == 0;
+
+        public bool IsCompleteGame() 
             => Players.Any(p => p.PipCount == 0);
         #endregion Public Methods
     }

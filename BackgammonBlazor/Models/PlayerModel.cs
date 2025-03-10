@@ -1,48 +1,37 @@
-﻿using BackgammonBlazor.Helpers;
+﻿
+using BackgammonBlazor.Helpers;
 
 namespace BackgammonBlazor.Models
 {
-    public class PlayerModel
+    public class PlayerModel(GameModel gameModel, PlayerColor playerColor)
     {
-        private const int InitialPipCount = 167;
+        public GameModel GameModel { get; set; } = gameModel;
 
-        public DiceModel Dice { get; set; } = new();
+        public int PipCount { get; set; } = _initialPipCount;
 
-        public PlayerColor PlayerColor { get; set; }
+        public PlayerColor PlayerColor { get; set; } = playerColor;
 
-        public int PipCount { get; set; } = InitialPipCount;
+        public bool IsActivePlayer { get; set; } = false;
+
+        private const int _initialPipCount = 167;
 
         #region Public Methods
-        public bool CanMakeMove(MoveModel move)
-        {
-            //No checkers to move
-            if (!move.Origin.HasCheckers())
-            {
-                return false;
-            }
-
-            //Point is made by opposing player
-            if (move.Destination.IsMadeByVillain(this))
-            {
-                return false;
-            }
-
-            return true;
-        }
-        public void RollDice()
-            => Dice.Roll();
-
         public bool HasCheckersOnPoint(BoardPointModel point)
-            => point.HasCheckers() && point.Checkers.First().CheckerColor.EqualsEnum(PlayerColor);
+            => point.HasCheckersOfPlayer(this);
 
-        public int GetDestinationPointNumber(int origin, int value)
-            => PlayerColor == PlayerColor.Light ? origin - value : origin + value;
+        public void SetPipCount()
+            => PipCount = GameModel.Checkers
+            .Where(c => c.MatchesPlayer(this))
+            .Select(c => c.CheckerColor == CheckerColor.Light ? 
+                c.Point.PointNumber : 
+                25 - c.Point.PointNumber)
+            .Sum();
         #endregion Public Methods
     }
 
     public enum PlayerColor
     {
-        Light = int.MinValue,
-        Dark = int.MaxValue,
+        Light = 25,
+        Dark = 0,
     }
 }

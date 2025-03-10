@@ -7,7 +7,9 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired] public GameModel Game { get; set; } = new();
+    [Parameter, EditorRequired] 
+    public GameModel GameModel { get; set; }
+
     [Parameter, EditorRequired] public EventCallback UpdateBoard { get; set; }
 
     private RenderFragment RenderBoard => (__builder) =>
@@ -56,7 +58,6 @@
 
     private RenderFragment BoardPoint() => (__builder) =>
     {
-        int pointNumber = BoardPointBuilder.GetNextPointNumber();
-        <Point Game="@Game" PointNumber="@pointNumber" UpdateBoard="@UpdateBoard" />
+        <Point GameModel="@GameModel" UpdateBoard="@UpdateBoard" />
     };
 }

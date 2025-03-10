@@ -1,20 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace BackgammonBlazor.Models
+﻿namespace BackgammonBlazor.Models
 {
-    public class CheckerModel
+    public class CheckerModel(GameModel gameModel, BoardPointModel point, CheckerColor checkerColor)
     {
-        public BoardPointModel? Point { get; set; }
+        #region Public Properties
+        public GameModel GameModel { get; set; } = gameModel;
 
-        public CheckerColor CheckerColor { get; set; }
+        public BoardPointModel Point { get; set; } = point;
 
-        public void Move(BoardPointModel? origin, BoardPointModel? destination)
+        public CheckerColor CheckerColor { get; set; } = checkerColor;
+        #endregion Public Properties
+
+        public void MoveChecker(BoardPointModel origin, BoardPointModel destination)
         {
-            if (origin == null || destination == null)
-            {
-                throw new ArgumentNullException(origin == null ? nameof(origin) : nameof(destination));
-            }
-
             Point = destination;
             origin.Checkers.Remove(this);
             destination.Checkers.Add(this);
@@ -23,7 +20,7 @@ namespace BackgammonBlazor.Models
 
     public enum CheckerColor
     {
-        Light = int.MinValue,
-        Dark = int.MaxValue,
+        Light = 25,
+        Dark = 0,
     }
 }

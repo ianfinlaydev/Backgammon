@@ -1,14 +1,16 @@
-﻿@using BackgammonBlazor.Helpers
+﻿@using BackgammonBlazor.GameObserver
+@using BackgammonBlazor.Helpers
 @using BackgammonBlazor.Models
+@inject GameEventManager GameEventManager
 @rendermode InteractiveServer
 
 <div>
-    <div>@($"{(Player.PlayerColor == PlayerColor.Light ? "Light" : "Dark")}") Player</div>
-    <div>Pip Count: @(Player.PipCount)</div>
+    <div>@GetPlayerLabelString()</div>
+    <div>@GetPipCountString()</div>
 
     @if (_showDice)
     {
-        <Dice Model="Player.Dice" />
+        <Dice GameModel="GameModel" />
     }
     else
     {
@@ -17,44 +19,68 @@
         </button>
     }
 
-    @if (Player == Game.ActivePlayer && Game.ActiveTurn.HasMoved())
+    @if (Player == GameModel.ActivePlayer && GameModel.ActiveTurn.HasMoved())
     {
         <button class="btn btn-primary" @onclick="UndoMove">Undo</button>
 
-        if (Game.ActiveTurn.IsComplete())
+        if (GameModel.IsCompleteTurn())
         {
-            <button class="btn btn-primary" @onclick="ConfirmTurn">Confirm</button>
+            <button class="btn btn-primary" @onclick="CompleteTurn">Confirm</button>
         }
     }
 </div>
 
 @code {
-    [Parameter, EditorRequired] public GameModel Game { get; set; } = new();
-    [Parameter, EditorRequired] public PlayerModel Player { get; set; } = new();
-    [Parameter, EditorRequired] public EventCallback UpdateBoard { get; set; }
+    [Parameter, EditorRequired] 
+    public GameModel GameModel { get; set; }
+
+    [Parameter, EditorRequired] 
+    public PlayerModel Player { get; set; }
+
+    [Parameter, EditorRequired] 
+    public EventCallback UpdateBoard_old { get; set; }
 
     private bool _showDice = false;
 
     private void RollDice()
     {
-        Player.RollDice();
-        Game.ActiveTurn.AddDiceValues(Player.Dice.Values);
         _showDice = true;
-        StateHasChanged();
+
+        GameModel.Dice.Roll();
+
+        UpdatePlayerPanel();
     }
 
-    private void UndoMove()
-        => Game.UndoMove();
-
-    private void ConfirmTurn()
+    private void CompleteTurn()
     {
-        Game.CompleteActiveTurn();
-        Game.ChangeActivePlayer();
-        Game.ActiveTurn = new();
         _showDice = false;
-        UpdateBoard.InvokeAsync();
+
+        GameModel.CompleteTurn();
+        GameModel.StartNewTurn();
+
+        UpdateBoard();
+    }
+
+    private void UndoMove() 
+    {
+        GameModel.UndoMove();
+
+        UpdateBoard();
     }
 
     private bool IsDisabled()
-        => Player.PlayerColor != Game.ActivePlayer.PlayerColor;
+        => Player != GameModel.ActivePlayer;
+
+    private string GetPlayerLabelString()
+        => $"{(Player.PlayerColor == PlayerColor.Light ? "Light" : "Dark")} Player";
+
+    private string GetPipCountString()
+        => $"Pip Count: {Player.PipCount}";
+
+    private void UpdateBoard()
+        => GameEventManager.Notify();
+
+
+    private void UpdatePlayerPanel()
+        => StateHasChanged();
 }

@@ -1,20 +1,19 @@
 ﻿@using BackgammonBlazor.Models
 @rendermode InteractiveServer
 
-<div @onclick="Model.Swap">
-    @for (int i = 0; i < Model.Values.Count; i++)
+<div @onclick="GameModel.Dice.SwapValues">
+    @for (int i = 0; i < GameModel.Dice.Values.Count; i++)
     {
         _offset = i;
-        @RenderDice(Model.Values[i])
+        @RenderDice(GameModel.Dice.Values[i])
     }
 </div>
 
 @code {
     [Parameter, EditorRequired]
-    public DiceModel Model { get; set; } = new();
+    public GameModel GameModel { get; set; }
 
     private int _offset;
-
 
     private RenderFragment RenderDice(int value) => (__builder) =>
     {

@@ -1,9 +1,14 @@
 ﻿namespace BackgammonBlazor.Models
 {
-    public class DiceModel
+    public class DiceModel(GameModel gameModel)
     {
-        public List<int> Values { get; set; } = [];
+        #region Public Properties
+        public GameModel GameModel { get; set; } = gameModel;
 
+        public List<int> Values { get; private set; } = [];
+        #endregion Public Properties
+
+        private List<int> _usedValues = [];
         private readonly Random _random = new();
         private bool _isDouble;
 
@@ -11,26 +16,34 @@
         {
             Values.Clear();
 
-            //Add initial 2 values from dice roll
-            for (int i = 0; i < 2; i++)
-            {
-                int value = GetRandomtValue();
-                Values.Add(value);
-            }
+            //Generate dice values
+            Values.AddRange([GetRandomValue(), GetRandomValue()]);
 
             _isDouble = Values[0] == Values[1];
 
-            if (_isDouble) //A double dice roll gets 4x the rolled value.
+            if (_isDouble) //A double dice roll gets x4 the rolled value.
             {
-                Values.AddRange(Values);
+                Values.AddRange([Values[0], Values[0]]);
             }
-            else //If not a double dice roll, sort the values in descending order
-            {
-                Values = [.. Values.OrderByDescending(v => v)];
-            }
+
+            SortDice();
         }
 
-        public void Swap()
+        public void UseDiceValue(int value)
+        {
+            _usedValues.Add(value);
+            Values.Remove(value);
+        }
+
+        public void UnuseDiceValue(int value)
+        {
+            Values.Add(value);
+            _usedValues.Remove(value);
+
+            SortDice();
+        }
+
+        public void SwapValues()
         {
             if (_isDouble || Values.Count != 2)
             {
@@ -40,7 +53,13 @@
             (Values[1], Values[0]) = (Values[0], Values[1]);
         }
 
-        private int GetRandomtValue()
+        public bool HasValues()
+            => Values.Count > 0;
+
+        private int GetRandomValue()
             => _random.Next(1, 7);
+
+        private void SortDice()
+            => Values = [.. Values.OrderByDescending(v => v)];
     }
 }
