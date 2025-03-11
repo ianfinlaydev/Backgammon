@@ -1,6 +1,8 @@
-﻿using BackgammonBlazor.Helpers;
+﻿using BackgammonBlazor.Models.Checker;
+using BackgammonBlazor.Models.Game;
+using BackgammonBlazor.Models.Player;
 
-namespace BackgammonBlazor.Models
+namespace BackgammonBlazor.Models.BoardPoint
 {
     public class BoardPointModel(GameModel gameModel, int pointNumber)
     {

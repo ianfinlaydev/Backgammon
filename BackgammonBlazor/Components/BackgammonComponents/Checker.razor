@@ -1,5 +1,5 @@
-﻿@using BackgammonBlazor.Helpers
-@using BackgammonBlazor.Models
+﻿@using BackgammonBlazor.Models.Checker
+@using BackgammonBlazor.Models.Player
 @rendermode InteractiveServer
 
 @RenderChecker()
@@ -17,6 +17,7 @@
         string cssCheckerStyle = GetCheckerStlyeCss();
         int numCheckersOnPoint = CheckerModel.Point.Checkers.Count;
 
+        //TODO: Make text color white for black checkers
         <div class="checker @(cssCheckerClass)" style="@(cssCheckerStyle)">
             @(Offset == 4 && numCheckersOnPoint > 5 ? $"{numCheckersOnPoint}" : "")
         </div>

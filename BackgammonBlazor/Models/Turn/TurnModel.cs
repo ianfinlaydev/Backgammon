@@ -1,6 +1,8 @@
 ﻿using BackgammonBlazor.Components.BackgammonComponents;
+using BackgammonBlazor.Models.Game;
+using BackgammonBlazor.Models.Move;
 
-namespace BackgammonBlazor.Models
+namespace BackgammonBlazor.Models.Turn
 {
     public class TurnModel(GameModel gameModel)
     {
@@ -19,7 +21,7 @@ namespace BackgammonBlazor.Models
         public void RemoveLastMove()
             => _moves.Pop();
 
-        public bool HasMoved() 
+        public bool HasMoved()
             => _moves.Count > 0;
 
         public bool IsComplete()

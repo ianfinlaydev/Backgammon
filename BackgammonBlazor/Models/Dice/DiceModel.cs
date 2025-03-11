@@ -1,4 +1,6 @@
-﻿namespace BackgammonBlazor.Models
+﻿using BackgammonBlazor.Models.Game;
+
+namespace BackgammonBlazor.Models.Dice
 {
     public class DiceModel(GameModel gameModel)
     {

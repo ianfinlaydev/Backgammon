@@ -1,4 +1,4 @@
-﻿namespace BackgammonBlazor.GameObserver
+﻿namespace BackgammonBlazor.Models.Game
 {
     public class GameEventManager
     {

@@ -1,4 +1,8 @@
-﻿namespace BackgammonBlazor.Models
+﻿using BackgammonBlazor.Models.BoardPoint;
+using BackgammonBlazor.Models.Game;
+using BackgammonBlazor.Models.Player;
+
+namespace BackgammonBlazor.Models.Checker
 {
     public class CheckerModel(GameModel gameModel, BoardPointModel point, PlayerColor playerColor)
     {

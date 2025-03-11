@@ -1,6 +1,6 @@
 using BackgammonBlazor.Components;
-using BackgammonBlazor.GameObserver;
 using BackgammonBlazor.Models;
+using BackgammonBlazor.Models.Game;
 
 var builder = WebApplication.CreateBuilder(args);
 

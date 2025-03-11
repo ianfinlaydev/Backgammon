@@ -1,5 +1,11 @@
-﻿
-namespace BackgammonBlazor.Models
+﻿using BackgammonBlazor.Models.BoardPoint;
+using BackgammonBlazor.Models.Checker;
+using BackgammonBlazor.Models.Dice;
+using BackgammonBlazor.Models.Move;
+using BackgammonBlazor.Models.Player;
+using BackgammonBlazor.Models.Turn;
+
+namespace BackgammonBlazor.Models.Game
 {
     public class GameModel
     {
@@ -7,7 +13,6 @@ namespace BackgammonBlazor.Models
         //TODO: Change a lot of these properties to private fields with method access
         public List<PlayerModel> Players { get; set; } = [];
 
-        //TODO: Change to Hero and Villain
         public PlayerModel Hero { get; set; }
 
         public PlayerModel Villain { get; set; }
@@ -41,8 +46,11 @@ namespace BackgammonBlazor.Models
         public BoardPointModel GetPoint(int pointNumber)
             => Points[pointNumber];
 
-        public BoardPointModel GetPoint(PlayerColor playerColor)
+        public BoardPointModel GetBarPoint(PlayerColor playerColor)
             => GetPoint((int)playerColor);
+
+        public BoardPointModel GetBorneOffPoint(PlayerColor playerColor)
+            => GetPoint(playerColor == PlayerColor.Light ? int.MinValue : int.MaxValue);
 
         public void StartNewTurn()
         {
@@ -83,16 +91,20 @@ namespace BackgammonBlazor.Models
 
         private bool IsValidMove(MoveModel move)
         {
-            //TODO: Add bearing off logic
-
-            //Hero needs to bear on checkers from their bar
-            if (Hero.HasCheckersOnBar() && move.Origin != GetPoint(Hero.PlayerColor))
+            //Hero needs to bear on checkers from their bar before making another move
+            if (Hero.HasCheckersOnBar() && move.Origin != GetBarPoint(Hero.PlayerColor))
             {
                 return false;
             }
 
-            //Point is made by villain
+            //Move is invalid because destination point is made by villain
             if (move.Destination.IsMadeByPlayer(Villain))
+            {
+                return false;
+            }
+
+            //Hero is able to bear off but specific move is invalid
+            if (move.IsBearingOff() && !move.IsValidBearOff())
             {
                 return false;
             }
@@ -136,7 +148,7 @@ namespace BackgammonBlazor.Models
         public bool IsCompleteTurn()
             => Dice.Values.Count == 0;
 
-        public bool IsCompleteGame() 
+        public bool IsCompleteGame()
             => Players.Any(p => p.PipCount == 0);
         #endregion Public Methods
     }

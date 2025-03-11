@@ -1,6 +1,5 @@
-﻿@using BackgammonBlazor.GameObserver
-@using BackgammonBlazor.Helpers
-@using BackgammonBlazor.Models
+﻿@using BackgammonBlazor.Models.BoardPoint
+@using BackgammonBlazor.Models.Game
 @inject GameEventManager GameEventManager
 @rendermode InteractiveServer
 
@@ -40,7 +39,7 @@
         <div class="point-layer2">
             @for (int i = 0; i < Math.Min(BoardPoint.Checkers.Count, _maxCheckerCapacity); i++)
             {
-                <Checker GameModel="@BoardPoint.Checkers[i]" Offset="i" />
+                <Checker CheckerModel="@BoardPoint.Checkers[i]" Offset="i" />
             }
         </div>
     };

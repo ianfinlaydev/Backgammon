@@ -1,7 +1,9 @@
-﻿using BackgammonBlazor.Models;
-using System.Drawing;
+﻿using BackgammonBlazor.Models.BoardPoint;
+using BackgammonBlazor.Models.Checker;
+using BackgammonBlazor.Models.Dice;
+using BackgammonBlazor.Models.Player;
 
-namespace BackgammonBlazor.Helpers
+namespace BackgammonBlazor.Models.Game
 {
     public class GameInitializer()
     {
@@ -19,7 +21,7 @@ namespace BackgammonBlazor.Helpers
             InitializeCheckers();
         }
 
-        private void InitializeDice() 
+        private void InitializeDice()
             => _gameModel.Dice = new DiceModel(_gameModel);
 
         private void InitializePlayers()
@@ -45,6 +47,9 @@ namespace BackgammonBlazor.Helpers
             {
                 _gameModel.Points.Add(i, new BoardPointModel(_gameModel, i));
             }
+
+            _gameModel.Points.Add(int.MinValue, new BoardPointModel(_gameModel, int.MinValue)); //PlayerColor.Light BorneOff
+            _gameModel.Points.Add(int.MaxValue, new BoardPointModel(_gameModel, int.MaxValue)); //PlayerColor.Dark BorneOff
         }
 
         private void InitializeCheckers()

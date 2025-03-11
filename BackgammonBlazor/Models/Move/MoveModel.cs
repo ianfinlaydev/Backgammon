@@ -1,4 +1,9 @@
-﻿namespace BackgammonBlazor.Models
+﻿using BackgammonBlazor.Models.BoardPoint;
+using BackgammonBlazor.Models.Checker;
+using BackgammonBlazor.Models.Game;
+using BackgammonBlazor.Models.Player;
+
+namespace BackgammonBlazor.Models.Move
 {
     public class MoveModel(GameModel gameModel, BoardPointModel origin, BoardPointModel destination, int consumedDiceValue = 0)
     {
@@ -20,10 +25,11 @@
             Destination = GetDestinationPoint(origin.PointNumber, value);
         }
 
+        //TODO: Add logic for bearing off
         private BoardPointModel GetDestinationPoint(int origin, int value)
             => GameModel.GetPoint(
-                GameModel.Hero.PlayerColor == PlayerColor.Light ? 
-                origin - value : 
+                GameModel.Hero.PlayerColor == PlayerColor.Light ?
+                origin - value :
                 origin + value);
 
         #region Public Methods
@@ -59,6 +65,35 @@
             return false;
         }
 
+        internal bool IsValidBearOff()
+        {
+            if (!GameModel.Hero.HasAllCheckersInHomeBoard())
+            {
+                return false;
+            }
+
+            if (GameModel.Hero.PlayerColor == PlayerColor.Light && ConsumedDiceValue == Origin.PointNumber)
+            {
+                return true;
+            }
+
+            if (GameModel.Hero.PlayerColor == PlayerColor.Dark && ConsumedDiceValue == 25 - Origin.PointNumber)
+            {
+                return true;
+            }
+
+            if (GameModel.Hero.CanMoveCheckerOnHigherPointNumber(Origin.PointNumber, ConsumedDiceValue))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool IsBearingOff()
+            => Destination == GameModel.GetBorneOffPoint(PlayerColor.Light) ||
+            Destination == GameModel.GetBorneOffPoint(PlayerColor.Dark);
+
         public MoveModel Reverse()
         {
             if (IsHit())
@@ -80,7 +115,7 @@
             => Destination.Checkers.First();
 
         public BoardPointModel GetBarOfHitChecker()
-            => GameModel.GetPoint(GetHitChecker().PlayerColor);
+            => GameModel.GetBarPoint(GetHitChecker().PlayerColor);
         #endregion Public Methods
     }
 }

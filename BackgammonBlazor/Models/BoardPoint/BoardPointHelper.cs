@@ -1,6 +1,6 @@
 ﻿using BackgammonBlazor.Models;
 
-namespace BackgammonBlazor.Helpers
+namespace BackgammonBlazor.Models.BoardPoint
 {
     public static class BoardPointHelper
     {
