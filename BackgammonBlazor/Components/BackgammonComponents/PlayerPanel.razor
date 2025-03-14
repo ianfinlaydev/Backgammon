@@ -20,6 +20,7 @@
 
     @if (Player == GameModel.Hero && GameModel.ActiveTurn.HasMoved())
     {
+        //TODO: Add some spacing between Undo and Confirm
         <button class="btn btn-primary" @onclick="UndoMove">Undo</button>
 
         if (GameModel.IsCompleteTurn())

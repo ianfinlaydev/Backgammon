@@ -1,4 +1,10 @@
-﻿.dice {
+﻿.dice-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.dice {
     padding: 4px;
     background-color: white;
     height: 54px;
@@ -67,4 +73,8 @@
 
 .fifth-face .column:nth-of-type(2) {
     justify-content: center;
+}
+
+.gray-out {
+    filter: grayscale(100%) opacity(0.5);
 }

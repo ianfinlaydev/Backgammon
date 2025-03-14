@@ -17,7 +17,6 @@
         string cssCheckerStyle = GetCheckerStlyeCss();
         int numCheckersOnPoint = CheckerModel.Point.Checkers.Count;
 
-        //TODO: Make text color white for black checkers
         <div class="checker @(cssCheckerClass)" style="@(cssCheckerStyle)">
             @(Offset == 4 && numCheckersOnPoint > 5 ? $"{numCheckersOnPoint}" : "")
         </div>
@@ -27,5 +26,5 @@
         => CheckerModel.PlayerColor == PlayerColor.Light ? "checker-light" : "checker-dark";
 
     private string GetCheckerStlyeCss()
-        => $"{(CheckerModel.Point.IsTopPoint() ? "top" : "bottom")}: {Offset * 50}px";
+        => $"{(CheckerModel.Point.IsTopPoint() ? "top" : "bottom")}: {Offset * 50}px; color: {(CheckerModel.PlayerColor == PlayerColor.Light ? "black" : "white")}";
 }

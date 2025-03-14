@@ -8,7 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddSingleton<GameEventManager>();
+builder.Services
+    .AddSingleton<GameEventManager>();
+    //TODO: Implement GameModel as a singleton with dependency injection
+    //.AddSingleton<GameModel>();
 
 var app = builder.Build();
 

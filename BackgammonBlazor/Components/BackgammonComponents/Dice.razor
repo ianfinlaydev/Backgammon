@@ -1,11 +1,18 @@
 ﻿@using BackgammonBlazor.Models.Game
+@inject GameEventManager GameEventManager
 @rendermode InteractiveServer
 
-<div @onclick="GameModel.Dice.SwapValues">
-    @for (int i = 0; i < GameModel.Dice.Values.Count; i++)
+<div class="dice-container" @onclick="ReverseOrderOfValues">
+    @for (int i = 0; i < _displayValues.Count; i++)
     {
-        _offset = i;
-        @RenderDice(GameModel.Dice.Values[i])
+        _isUsedValue = _usedValues.Contains(_displayValues[i]);
+
+        if (_isUsedValue)
+        {
+            _usedValues.Remove(_displayValues[i]);
+        }
+
+        @RenderDice(_displayValues[i], _isUsedValue)
     }
 </div>
 
@@ -13,9 +20,42 @@
     [Parameter, EditorRequired]
     public GameModel GameModel { get; set; }
 
-    private int _offset;
+    private List<int> _displayValues;
+    private List<int> _usedValues;
 
-    private RenderFragment RenderDice(int value) => (__builder) =>
+    private bool _isUsedValue;
+    private bool _isAscOrder;
+
+    protected override void OnInitialized()
+    {
+        GameEventManager.Subscribe(OnGameEventReceived);
+
+        UpdateValueCollections();
+    }
+
+    private void OnGameEventReceived()
+    {
+        UpdateValueCollections();
+    }
+
+    private void ReverseOrderOfValues()
+    {
+        _isAscOrder = !_isAscOrder;
+
+        UpdateValueCollections();
+        StateHasChanged();
+    }
+
+    private void UpdateValueCollections()
+    {
+        _displayValues = OrderDisplayValues(GameModel.Dice.GetAllValues()).ToList();
+        _usedValues = GameModel.Dice.GetUsedValues().ToList();
+    }
+
+    private IEnumerable<int> OrderDisplayValues(IEnumerable<int> values)
+        => _isAscOrder ? values.OrderBy(v => v) : values.OrderByDescending(v => v);
+
+    private RenderFragment RenderDice(int value, bool isUsed) => (__builder) =>
     {
         switch (value)
         {
@@ -44,14 +84,14 @@
 
     private RenderFragment DiceValue1() => (__builder) =>
     {
-        <div class="dice first-face" style="left: @($"{_offset * 10}")">
+        <div class="dice first-face @($"{(_isUsedValue ? "gray-out" : "")}")">
             <span class="dot"></span>
         </div>
     };
 
     private RenderFragment DiceValue2() => (__builder) =>
     {
-        <div class="dice second-face" style="left: @($"{_offset * 10}")">
+        <div class="dice second-face @($"{(_isUsedValue ? "gray-out" : "")}")">
             <span class="dot"></span>
             <span class="dot"></span>
         </div>
@@ -59,7 +99,7 @@
 
     private RenderFragment DiceValue3() => (__builder) =>
     {
-        <div class="dice third-face" style="left: @($"{_offset * 10}")">
+        <div class="dice third-face @($"{(_isUsedValue ? "gray-out" : "")}")">
             <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
@@ -68,7 +108,7 @@
 
     private RenderFragment DiceValue4() => (__builder) =>
     {
-        <div class="dice fourth-face" style="left: @($"{_offset * 10}")">
+        <div class="dice fourth-face @($"{(_isUsedValue ? "gray-out" : "")}")">
             <div class="column">
                 <span class="dot"></span>
                 <span class="dot"></span>
@@ -82,7 +122,7 @@
 
     private RenderFragment DiceValue5() => (__builder) =>
     {
-        <div class="dice fifth-face" style="left: @($"{_offset * 10}")">
+        <div class="dice fifth-face @($"{(_isUsedValue ? "gray-out" : "")}")">
             <div class="column">
                 <span class="dot"></span>
                 <span class="dot"></span>
@@ -99,7 +139,7 @@
 
     private RenderFragment DiceValue6() => (__builder) =>
     {
-        <div class="dice fourth-face" style="left: @($"{_offset * 10}")">
+        <div class="dice fourth-face @($"{(_isUsedValue ? "gray-out" : "")}")">
             <div class="column">
                 <span class="dot"></span>
                 <span class="dot"></span>

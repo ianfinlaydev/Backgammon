@@ -20,17 +20,24 @@ namespace BackgammonBlazor.Models.Move
 
         private MoveModel _hittingMove;
 
-        public MoveModel(GameModel gameModel, BoardPointModel origin, int value) : this(gameModel, origin, null, value)
+        public MoveModel(GameModel gameModel, BoardPointModel origin, int consumedDiceValue) : this(gameModel, origin, null, consumedDiceValue)
         {
-            Destination = GetDestinationPoint(origin.PointNumber, value);
+            Destination = GetDestinationPoint(origin.PointNumber, consumedDiceValue);
         }
 
-        //TODO: Add logic for bearing off
-        private BoardPointModel GetDestinationPoint(int origin, int value)
-            => GameModel.GetPoint(
-                GameModel.Hero.PlayerColor == PlayerColor.Light ?
-                origin - value :
-                origin + value);
+        private BoardPointModel GetDestinationPoint(int origin, int consumedDiceValue)
+        {
+            PlayerColor color = GameModel.Hero.PlayerColor;
+            int destination = color == PlayerColor.Light ? origin - consumedDiceValue : origin + consumedDiceValue;
+
+            //If destination is borne off point
+            if (destination < 1 || destination > 24)
+            {
+                return GameModel.GetBorneOffPoint(color);
+            }
+
+            return GameModel.GetPoint(destination);
+        }
 
         #region Public Methods
         public void Process()
@@ -72,12 +79,7 @@ namespace BackgammonBlazor.Models.Move
                 return false;
             }
 
-            if (GameModel.Hero.PlayerColor == PlayerColor.Light && ConsumedDiceValue == Origin.PointNumber)
-            {
-                return true;
-            }
-
-            if (GameModel.Hero.PlayerColor == PlayerColor.Dark && ConsumedDiceValue == 25 - Origin.PointNumber)
+            if (IsPerfectBearOff())
             {
                 return true;
             }
@@ -89,6 +91,9 @@ namespace BackgammonBlazor.Models.Move
 
             return true;
         }
+
+        private bool IsPerfectBearOff()
+            => ConsumedDiceValue == (GameModel.Hero.PlayerColor == PlayerColor.Light ? Origin.PointNumber : 25 - Origin.PointNumber);
 
         public bool IsBearingOff()
             => Destination == GameModel.GetBorneOffPoint(PlayerColor.Light) ||

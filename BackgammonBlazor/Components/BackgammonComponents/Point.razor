@@ -46,6 +46,9 @@
 
     private void TryMove()
     {
+        //TODO: Check if dice value is empty after trymove & updateboard
+        //  because if the game is complete and there dice rolls left, 
+        //  the player can't finish their turn.
         if (GameModel.TryMove(BoardPoint))
         {
             UpdateBoard();

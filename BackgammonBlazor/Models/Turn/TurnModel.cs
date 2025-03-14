@@ -25,6 +25,6 @@ namespace BackgammonBlazor.Models.Turn
             => _moves.Count > 0;
 
         public bool IsComplete()
-            => !GameModel.Dice.HasValues();
+            => !GameModel.Dice.HasUnusedValues();
     }
 }

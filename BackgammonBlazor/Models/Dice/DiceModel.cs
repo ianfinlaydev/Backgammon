@@ -6,62 +6,53 @@ namespace BackgammonBlazor.Models.Dice
     {
         #region Public Properties
         public GameModel GameModel { get; set; } = gameModel;
-
-        public List<int> Values { get; private set; } = [];
         #endregion Public Properties
 
+        private List<int> _unusedValues = [];
         private List<int> _usedValues = [];
+
         private readonly Random _random = new();
+
         private bool _isDouble;
 
         public void Roll()
         {
-            Values.Clear();
+            _unusedValues.Clear();
+            _usedValues.Clear();
 
             //Generate dice values
-            Values.AddRange([GetRandomValue(), GetRandomValue()]);
+            _unusedValues.AddRange([GetRandomValue(), GetRandomValue()]);
 
-            _isDouble = Values[0] == Values[1];
+            _isDouble = _unusedValues[0] == _unusedValues[1];
 
             if (_isDouble) //A double dice roll gets x4 the rolled value.
             {
-                Values.AddRange([Values[0], Values[0]]);
+                _unusedValues.AddRange([_unusedValues[0], _unusedValues[0]]);
             }
-
-            SortDice();
         }
 
         public void UseDiceValue(int value)
         {
+            _unusedValues.Remove(value);
             _usedValues.Add(value);
-            Values.Remove(value);
         }
 
         public void UnuseDiceValue(int value)
         {
-            Values.Add(value);
             _usedValues.Remove(value);
-
-            SortDice();
+            _unusedValues.Insert(0, value);
         }
 
-        public void SwapValues()
-        {
-            if (_isDouble || Values.Count != 2)
-            {
-                return;
-            }
-
-            (Values[1], Values[0]) = (Values[0], Values[1]);
-        }
-
-        public bool HasValues()
-            => Values.Count > 0;
+        public bool HasUnusedValues()
+            => _unusedValues.Count > 0;
 
         private int GetRandomValue()
             => _random.Next(1, 7);
 
-        private void SortDice()
-            => Values = [.. Values.OrderByDescending(v => v)];
+        public IEnumerable<int> GetAllValues() => _unusedValues.Concat(_usedValues);
+
+        public IEnumerable<int> GetUnusedValues() => _unusedValues;
+
+        public IEnumerable<int> GetUsedValues() => _usedValues;
     }
 }

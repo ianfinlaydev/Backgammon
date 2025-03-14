@@ -50,7 +50,7 @@ namespace BackgammonBlazor.Models.Game
             => GetPoint((int)playerColor);
 
         public BoardPointModel GetBorneOffPoint(PlayerColor playerColor)
-            => GetPoint(playerColor == PlayerColor.Light ? int.MinValue : int.MaxValue);
+            => GetPoint(playerColor == PlayerColor.Light ? (int)BorneOffPoint.Light : (int)BorneOffPoint.Dark);
 
         public void StartNewTurn()
         {
@@ -75,7 +75,7 @@ namespace BackgammonBlazor.Models.Game
                 return false;
             }
 
-            foreach (var diceValue in Dice.Values)
+            foreach (var diceValue in Dice.GetUnusedValues())
             {
                 MoveModel move = new(this, origin, diceValue);
 
@@ -126,6 +126,13 @@ namespace BackgammonBlazor.Models.Game
         public void UndoMove()
         {
             //TODO: Error when undoing moves where the undo dice order matters (made points blocking)
+            //TODO: Make sure the dice order remains the same when undoing move.
+                //explanation:
+                //  try move -> use dice value 1
+                //  undo move -> unuse dice value 1
+                //  try move -> use dice value 2
+                //
+                // The second try move should be using dice value 1.
             MoveModel moveToUndo = ActiveTurn.GetLastMove();
 
             moveToUndo.Reverse().Process();
@@ -146,7 +153,7 @@ namespace BackgammonBlazor.Models.Game
         }
 
         public bool IsCompleteTurn()
-            => Dice.Values.Count == 0;
+            => !Dice.HasUnusedValues();
 
         public bool IsCompleteGame()
             => Players.Any(p => p.PipCount == 0);

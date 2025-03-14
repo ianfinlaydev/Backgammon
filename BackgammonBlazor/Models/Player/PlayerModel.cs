@@ -41,22 +41,30 @@ namespace BackgammonBlazor.Models.Player
         }
 
         private IEnumerable<CheckerModel> GetCheckers()
-            => GameModel.Checkers
-            .Where(c => c.PlayerColor == PlayerColor);
+            => GameModel.Checkers.Where(c => c.PlayerColor == PlayerColor);
 
         public void SetPipCount()
-            => PipCount = GameModel.Checkers
-            .Where(c => c.PlayerColor == PlayerColor)
-            .Select(c => c.PlayerColor == PlayerColor.Light ?
-                c.Point.PointNumber :
-                25 - c.Point.PointNumber)
-            .Sum();
+            => PipCount = GetCheckers()
+                .Select(c => c.Point.PointNumber)
+                .Select(p =>
+                    p == (int)PlayerColor.Light ? 25 :
+                    p == (int)PlayerColor.Dark ? 25 :
+                    p == (int)BorneOffPoint.Dark ? 0 :
+                    PlayerColor == PlayerColor.Dark ? 25 - p :
+                    p)
+                .Sum();
         #endregion Public Methods
     }
 
     public enum PlayerColor
     {
-        Light = 25,
-        Dark = 0,
+        Light = int.MaxValue,
+        Dark = int.MinValue,
+    }
+
+    public enum BorneOffPoint
+    {
+        Light = 0,
+        Dark = 26
     }
 }

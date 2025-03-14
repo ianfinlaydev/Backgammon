@@ -43,13 +43,19 @@ namespace BackgammonBlazor.Models.Game
 
         private void InitializePoints()
         {
-            for (int i = 0; i <= 25; i++)
+            for (int i = 1; i <= 24; i++)
             {
                 _gameModel.Points.Add(i, new BoardPointModel(_gameModel, i));
             }
 
-            _gameModel.Points.Add(int.MinValue, new BoardPointModel(_gameModel, int.MinValue)); //PlayerColor.Light BorneOff
-            _gameModel.Points.Add(int.MaxValue, new BoardPointModel(_gameModel, int.MaxValue)); //PlayerColor.Dark BorneOff
+            //Borne Off Points
+            _gameModel.Points.Add((int)BorneOffPoint.Light, new BoardPointModel(_gameModel, (int)BorneOffPoint.Light)); //PlayerColor.Light BorneOff
+            _gameModel.Points.Add((int)BorneOffPoint.Dark, new BoardPointModel(_gameModel, (int)BorneOffPoint.Dark)); //PlayerColor.Dark BorneOff
+
+            //Bar Points
+            _gameModel.Points.Add((int)PlayerColor.Light, new BoardPointModel(_gameModel, (int)PlayerColor.Light)); //PlayerColor.Light
+            _gameModel.Points.Add((int)PlayerColor.Dark, new BoardPointModel(_gameModel, (int)PlayerColor.Dark)); //PlayerColor.Dark
+
         }
 
         private void InitializeCheckers()
@@ -63,20 +69,35 @@ namespace BackgammonBlazor.Models.Game
                     CheckerModel checker = new(_gameModel, point, playerColor);
 
                     point.Checkers.Add(checker);
+
+                    _gameModel.Checkers.Add(checker);
                 }
             }
         }
 
         private readonly (int pointNumber, int numCheckers, PlayerColor checkerColor)[] InitialCheckerInfo =
         [
-            ( 1, 2, PlayerColor.Dark ),
-            ( 6, 5, PlayerColor.Light ),
-            ( 8, 3, PlayerColor.Light ),
-            ( 12, 5, PlayerColor.Dark ),
-            ( 13, 5, PlayerColor.Light ),
-            ( 17, 3, PlayerColor.Dark ),
-            ( 19, 5, PlayerColor.Dark ),
-            ( 24, 2, PlayerColor.Light ),
+            //( 1, 2, PlayerColor.Dark ),
+            //( 6, 5, PlayerColor.Light ),
+            //( 8, 3, PlayerColor.Light ),
+            //( 12, 5, PlayerColor.Dark ),
+            //( 13, 5, PlayerColor.Light ),
+            //( 17, 3, PlayerColor.Dark ),
+            //( 19, 5, PlayerColor.Dark ),
+            //( 24, 2, PlayerColor.Light ),
+            
+            ( 18, 2, PlayerColor.Dark ),
+            ( 19, 2, PlayerColor.Dark ),
+            ( 20, 2, PlayerColor.Dark ),
+            ( 21, 2, PlayerColor.Dark ),
+            ( 22, 2, PlayerColor.Dark ),
+            ( 23, 2, PlayerColor.Dark ),
+            ( 7, 2, PlayerColor.Light ),
+            ( 6, 2, PlayerColor.Light ),
+            ( 5, 2, PlayerColor.Light ),
+            ( 4, 2, PlayerColor.Light ),
+            ( 3, 2, PlayerColor.Light ),
+            ( 2, 2, PlayerColor.Light ),
         ];
     }
 }
