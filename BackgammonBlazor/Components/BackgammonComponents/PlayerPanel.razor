@@ -1,5 +1,6 @@
 ﻿@using BackgammonBlazor.Models.Game
 @using BackgammonBlazor.Models.Player
+@inject GameModel Game
 @inject GameEventManager GameEventManager
 @rendermode InteractiveServer
 
@@ -9,7 +10,7 @@
 
     @if (_showDice)
     {
-        <Dice GameModel="GameModel" />
+        <Dice GameModel="Game" />
     }
     else
     {
@@ -18,11 +19,11 @@
         </button>
     }
 
-    @if (Player == GameModel.Hero && GameModel.ActiveTurn.HasMoved())
+    @if (_player == Game.Hero && Game.ActiveTurn.HasMoved())
     {
         <button class="btn btn-primary" style="margin-right: 10px;" @onclick="UndoMove">Undo</button>
 
-        if (GameModel.IsCompleteTurn())
+        if (Game.IsCompleteTurn())
         {
             <button class="btn btn-primary" @onclick="CompleteTurn">Confirm</button>
         }
@@ -30,19 +31,22 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired] 
-    public GameModel GameModel { get; set; }
+    [Parameter, EditorRequired]
+    public PlayerColor PlayerColor { get; set; }
 
-    [Parameter, EditorRequired] 
-    public PlayerModel Player { get; set; }
-
+    private PlayerModel _player;
     private bool _showDice = false;
+
+    protected override void OnInitialized()
+    {
+        _player = Game.GetPlayer(PlayerColor);
+    }
 
     private void RollDice()
     {
         _showDice = true;
 
-        GameModel.Dice.Roll();
+        Game.Dice.Roll();
 
         UpdatePlayerPanel();
     }
@@ -51,27 +55,27 @@
     {
         _showDice = false;
 
-        GameModel.CompleteTurn();
-        GameModel.StartNewTurn();
+        Game.CompleteTurn();
+        Game.StartNewTurn();
 
         UpdateBoard();
     }
 
     private void UndoMove() 
     {
-        GameModel.UndoMove();
+        Game.UndoMove();
 
         UpdateBoard();
     }
 
     private bool IsDisabled()
-        => Player != GameModel.Hero;
+        => _player != Game.Hero;
 
     private string GetPlayerLabelString()
-        => $"{(Player.PlayerColor == PlayerColor.Light ? "Light" : "Dark")} Player";
+        => $"{(PlayerColor == PlayerColor.Light ? "Light" : "Dark")} Player";
 
     private string GetPipCountString()
-        => $"Pip Count: {Player.PipCount}";
+        => $"Pip Count: {_player.PipCount}";
 
     private void UpdateBoard()
         => GameEventManager.Notify();

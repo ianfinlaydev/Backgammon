@@ -3,29 +3,23 @@
 @using BackgammonBlazor.Models.Game
 @using BackgammonBlazor.Models.Player
 @using Microsoft.AspNetCore.Components.Rendering
+@inject GameModel Game
+@inject GameInitializer GameInitializer
 @inject GameEventManager GameEventManager
 @rendermode InteractiveServer
 
 <h3>Backgammon</h3>
 
-<PlayerPanel GameModel="@GameModel" Player="@GameModel.GetPlayer(PlayerColor.Light)" />
-<Board GameModel="@GameModel" />
-<PlayerPanel GameModel="@GameModel" Player="@GameModel.GetPlayer(PlayerColor.Dark)" />
+<PlayerPanel PlayerColor="@PlayerColor.Light" />
+<Board />
+<PlayerPanel PlayerColor="@PlayerColor.Dark" />
 
 @code {
-    public GameModel GameModel { get; set; } = new();
-
     protected override void OnInitialized()
     {
-        InitializeGame();
+        GameInitializer.Initialize(Game);
 
         GameEventManager.Subscribe(OnGameEventReceived);
-    }
-
-    private void InitializeGame()
-    {
-        GameInitializer _initializer = new();
-        _initializer.InitializeGame(GameModel);
     }
 
     private void OnGameEventReceived()
@@ -38,8 +32,4 @@
          */
         StateHasChanged();
     }
-
-    // public void Dispose(){
-    //     GameEventManager.Unsubscribe(OnGameEventReceived);
-    // }
 }

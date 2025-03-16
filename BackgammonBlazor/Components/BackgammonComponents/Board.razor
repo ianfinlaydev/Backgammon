@@ -1,4 +1,4 @@
-﻿@using BackgammonBlazor.Models.Game
+﻿@using BackgammonBlazor.Models.BoardPoint
 @rendermode InteractiveServer
 
 <div>
@@ -6,9 +6,6 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired] 
-    public GameModel GameModel { get; set; }
-
     private RenderFragment RenderBoard => (__builder) =>
     {
         <PointLabel ColumnStart="13" ColumnEnd="24" IsAsc=true />
@@ -55,6 +52,6 @@
 
     private RenderFragment BoardPoint() => (__builder) =>
     {
-        <Point GameModel="@GameModel" />
+        <Point PointNumber="@BoardPointHelper.GetNextPointNumber()" />
     };
 }

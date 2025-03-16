@@ -9,9 +9,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services
-    .AddSingleton<GameEventManager>();
-    //TODO: Implement GameModel as a singleton with dependency injection
-    //.AddSingleton<GameModel>();
+    .AddSingleton<GameEventManager>()
+    .AddSingleton<GameModel>()
+    .AddScoped<GameInitializer>();
 
 var app = builder.Build();
 

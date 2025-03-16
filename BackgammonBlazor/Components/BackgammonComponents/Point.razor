@@ -1,5 +1,6 @@
 ﻿@using BackgammonBlazor.Models.BoardPoint
 @using BackgammonBlazor.Models.Game
+@inject GameModel Game
 @inject GameEventManager GameEventManager
 @rendermode InteractiveServer
 
@@ -10,36 +11,36 @@
 
 @code {
     [Parameter, EditorRequired]
-    public GameModel GameModel { get; set; }
+    public int PointNumber { get; set; }
 
-    public BoardPointModel BoardPoint { get; set; }
+    private BoardPointModel _point;
 
     protected override void OnInitialized()
     {
-        BoardPoint = GameModel.GetPoint(BoardPointHelper.GetNextPointNumber());
+        _point = Game.GetPoint(PointNumber);
     }
 
     private const int _maxCheckerCapacity = 5;
 
     private RenderFragment RenderBoardPoint() => (__builder) =>
     {
-        string cssPointClass = GetPointClassCss(BoardPoint.IsTopPoint(), BoardPoint.IsLightPoint());
-        string cssPointStyle = GetPointStyleCss(BoardPoint.IsTopPoint());
+        string cssPointClass = GetPointClassCss(_point.IsTopPoint(), _point.IsLightPoint());
+        string cssPointStyle = GetPointStyleCss(_point.IsTopPoint());
 
         <div class="board-point point-layer1 @(cssPointClass)" style="@(cssPointStyle)"></div>
     };
 
     private RenderFragment RenderPointCheckers() => (__builder) =>
     {
-        if (!BoardPoint.HasCheckers())
+        if (!_point.HasCheckers())
         {
             return;
         }
 
         <div class="point-layer2">
-            @for (int i = 0; i < Math.Min(BoardPoint.Checkers.Count, _maxCheckerCapacity); i++)
+            @for (int i = 0; i < Math.Min(_point.Checkers.Count, _maxCheckerCapacity); i++)
             {
-                <Checker CheckerModel="@BoardPoint.Checkers[i]" Offset="i" />
+                <Checker CheckerModel="@_point.Checkers[i]" Offset="i" />
             }
         </div>
     };
@@ -49,7 +50,7 @@
         //TODO: Check if dice value is empty after trymove & updateboard
         //  because if the game is complete and there dice rolls left, 
         //  the player can't finish their turn.
-        if (GameModel.TryMove(BoardPoint))
+        if (Game.TryMove(_point))
         {
             UpdateBoard();
         }

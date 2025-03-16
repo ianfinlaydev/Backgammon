@@ -7,7 +7,7 @@ using BackgammonBlazor.Models.Turn;
 
 namespace BackgammonBlazor.Models.Game
 {
-    public class GameModel
+    public class GameModel()
     {
         #region Public Properties
         //TODO: Change a lot of these properties to private fields with method access
@@ -29,6 +29,7 @@ namespace BackgammonBlazor.Models.Game
         #endregion Public Properties
 
         #region Public Methods
+
         public PlayerModel GetPlayer(PlayerColor color)
             => Players.First(p => p.PlayerColor == color);
 

@@ -25,6 +25,7 @@
     private string GetCheckerClassCss()
         => CheckerModel.PlayerColor == PlayerColor.Light ? "checker-light" : "checker-dark";
 
+    //TODO: Get rid of Offset? In place of css: flex + gap. See Dice.razor.css?
     private string GetCheckerStlyeCss()
         => $"{(CheckerModel.Point.IsTopPoint() ? "top" : "bottom")}: {Offset * 50}px; color: {(CheckerModel.PlayerColor == PlayerColor.Light ? "black" : "white")}";
 }
