@@ -2,9 +2,9 @@
 using BackgammonBlazor.Models.Game;
 using BackgammonBlazor.Models.Player;
 
-namespace BackgammonBlazor.Models.BoardPoint
+namespace BackgammonBlazor.Models.Point
 {
-    public class BoardPointModel(GameModel gameModel, int pointNumber)
+    public class PointModel(GameModel gameModel, int pointNumber)
     {
         #region Public Properties
         public GameModel GameModel { get; set; } = gameModel;
@@ -29,7 +29,6 @@ namespace BackgammonBlazor.Models.BoardPoint
 
         public bool IsMadeByPlayer(PlayerModel player)
             => IsMade() && HasCheckersOfPlayer(player);
-        #endregion Public Methods
 
         public bool IsTopPoint()
             => PointNumber > 12;
@@ -42,5 +41,6 @@ namespace BackgammonBlazor.Models.BoardPoint
 
         public bool IsDarkPoint()
             => !IsLightPoint();
+        #endregion Public Methods
     }
 }

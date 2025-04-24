@@ -1,4 +1,4 @@
-﻿@using BackgammonBlazor.Models.BoardPoint
+﻿@using BackgammonBlazor.Models.Point
 @rendermode InteractiveServer
 
 <div>
@@ -52,6 +52,6 @@
 
     private RenderFragment BoardPoint() => (__builder) =>
     {
-        <Point PointNumber="@BoardPointHelper.GetNextPointNumber()" />
+        <Point PointNumber="@PointHelper.GetNextPointNumber()" />
     };
 }

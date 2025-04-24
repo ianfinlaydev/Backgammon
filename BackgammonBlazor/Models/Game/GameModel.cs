@@ -1,4 +1,4 @@
-﻿using BackgammonBlazor.Models.BoardPoint;
+﻿using BackgammonBlazor.Models.Point;
 using BackgammonBlazor.Models.Checker;
 using BackgammonBlazor.Models.Dice;
 using BackgammonBlazor.Models.Move;
@@ -7,17 +7,16 @@ using BackgammonBlazor.Models.Turn;
 
 namespace BackgammonBlazor.Models.Game
 {
-    public class GameModel()
+    public class GameModel(MoveFactory moveFactory)
     {
         #region Public Properties
-        //TODO: Change a lot of these properties to private fields with method access
         public List<PlayerModel> Players { get; set; } = [];
 
         public PlayerModel Hero { get; set; }
 
         public PlayerModel Villain { get; set; }
 
-        public Dictionary<int, BoardPointModel> Points { get; set; } = [];
+        public Dictionary<int, PointModel> Points { get; set; } = [];
 
         public List<CheckerModel> Checkers { get; set; } = [];
 
@@ -27,6 +26,8 @@ namespace BackgammonBlazor.Models.Game
 
         public TurnModel ActiveTurn { get; set; }
         #endregion Public Properties
+
+        private MoveFactory _moveFactory = moveFactory;
 
         #region Public Methods
 
@@ -44,13 +45,13 @@ namespace BackgammonBlazor.Models.Game
             Villain = Players.First(p => !p.IsActivePlayer);
         }
 
-        public BoardPointModel GetPoint(int pointNumber)
+        public PointModel GetPoint(int pointNumber)
             => Points[pointNumber];
 
-        public BoardPointModel GetBarPoint(PlayerColor playerColor)
+        public PointModel GetBarPoint(PlayerColor playerColor)
             => GetPoint((int)playerColor);
 
-        public BoardPointModel GetBorneOffPoint(PlayerColor playerColor)
+        public PointModel GetBorneOffPoint(PlayerColor playerColor)
             => GetPoint(playerColor == PlayerColor.Light ? (int)BorneOffPoint.Light : (int)BorneOffPoint.Dark);
 
         public void StartNewTurn()
@@ -69,7 +70,7 @@ namespace BackgammonBlazor.Models.Game
             ChangeActivePlayer();
         }
 
-        public bool TryMove(BoardPointModel origin)
+        public bool TryMove(PointModel origin)
         {
             if (!Hero.HasCheckersOnPoint(origin))
             {
@@ -78,11 +79,18 @@ namespace BackgammonBlazor.Models.Game
 
             foreach (var diceValue in Dice.GetUnusedValues())
             {
-                MoveModel move = new(this, origin, diceValue);
+                MoveModel move = _moveFactory.CreateMove(origin, diceValue);
 
-                if (IsValidMove(move))
+                if (move.IsValid())
                 {
-                    ProcessMove(move);
+                    move.Process();
+
+                    ActiveTurn.AddMove(move);
+
+                    UpdatePipCounts();
+
+                    Dice.UseDiceValue(move.ConsumedDiceValue);
+
                     return true;
                 }
             }
@@ -90,46 +98,12 @@ namespace BackgammonBlazor.Models.Game
             return false;
         }
 
-        private bool IsValidMove(MoveModel move)
-        {
-            //Hero needs to bear on checkers from their bar before making another move
-            if (Hero.HasCheckersOnBar() && move.Origin != GetBarPoint(Hero.PlayerColor))
-            {
-                return false;
-            }
-
-            //Move is invalid because destination point is made by villain
-            if (move.Destination.IsMadeByPlayer(Villain))
-            {
-                return false;
-            }
-
-            //Hero is able to bear off but specific move is invalid
-            if (move.IsBearingOff() && !move.IsValidBearOff())
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public void ProcessMove(MoveModel move)
-        {
-            move.Process();
-
-            ActiveTurn.AddMove(move);
-
-            UpdatePipCounts();
-
-            Dice.UseDiceValue(move.ConsumedDiceValue);
-        }
-
         public void UndoMove()
         {
             //TODO: Error when undoing moves where the undo dice order matters (made points blocking)
             MoveModel moveToUndo = ActiveTurn.GetLastMove();
 
-            moveToUndo.Reverse().Process();
+            moveToUndo.Undo();
 
             ActiveTurn.RemoveLastMove();
 

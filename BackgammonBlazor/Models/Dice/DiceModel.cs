@@ -14,6 +14,7 @@ namespace BackgammonBlazor.Models.Dice
         private readonly Random _random = new();
 
         private bool _isDouble;
+        private bool _isAscOrder;
 
         public void Roll()
         {
@@ -33,12 +34,22 @@ namespace BackgammonBlazor.Models.Dice
 
         public void UseDiceValue(int value)
         {
+            if (!IsValidValue(value))
+            {
+                return;
+            }
+
             _unusedValues.Remove(value);
             _usedValues.Add(value);
         }
 
         public void UnuseDiceValue(int value)
         {
+            if (!IsValidValue(value))
+            {
+                return;
+            }
+
             _usedValues.Remove(value);
             _unusedValues.Insert(0, value);
         }
@@ -49,10 +60,14 @@ namespace BackgammonBlazor.Models.Dice
         private int GetRandomValue()
             => _random.Next(1, 7);
 
-        public IEnumerable<int> GetAllValues() => _unusedValues.Concat(_usedValues);
+        public IEnumerable<int> GetAllValues() => _unusedValues.Concat(_usedValues).OrderBy(v => _isAscOrder ? v : -v);
 
         public IEnumerable<int> GetUnusedValues() => _unusedValues;
 
         public IEnumerable<int> GetUsedValues() => _usedValues;
+
+        private bool IsValidValue(int value) => value >= 1 && value <= 6;
+
+        public void ReverseValueOrder() => _isAscOrder = !_isAscOrder;
     }
 }

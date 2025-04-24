@@ -1,6 +1,7 @@
 using BackgammonBlazor.Components;
 using BackgammonBlazor.Models;
 using BackgammonBlazor.Models.Game;
+using BackgammonBlazor.Models.Move;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +10,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services
-    .AddSingleton<GameEventManager>()
     .AddSingleton<GameModel>()
+    .AddSingleton<GameEventManager>()
+    .AddSingleton<MoveFactory>()
     .AddScoped<GameInitializer>();
 
 var app = builder.Build();

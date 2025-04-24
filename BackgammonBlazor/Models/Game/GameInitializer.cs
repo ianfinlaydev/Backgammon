@@ -1,4 +1,4 @@
-﻿using BackgammonBlazor.Models.BoardPoint;
+﻿using BackgammonBlazor.Models.Point;
 using BackgammonBlazor.Models.Checker;
 using BackgammonBlazor.Models.Dice;
 using BackgammonBlazor.Models.Player;
@@ -45,16 +45,16 @@ namespace BackgammonBlazor.Models.Game
         {
             for (int i = 1; i <= 24; i++)
             {
-                _game.Points.Add(i, new BoardPointModel(_game, i));
+                _game.Points.Add(i, new PointModel(_game, i));
             }
 
             //Borne Off Points
-            _game.Points.Add((int)BorneOffPoint.Light, new BoardPointModel(_game, (int)BorneOffPoint.Light)); //PlayerColor.Light BorneOff
-            _game.Points.Add((int)BorneOffPoint.Dark, new BoardPointModel(_game, (int)BorneOffPoint.Dark)); //PlayerColor.Dark BorneOff
+            _game.Points.Add((int)BorneOffPoint.Light, new PointModel(_game, (int)BorneOffPoint.Light));
+            _game.Points.Add((int)BorneOffPoint.Dark, new PointModel(_game, (int)BorneOffPoint.Dark));
 
             //Bar Points
-            _game.Points.Add((int)PlayerColor.Light, new BoardPointModel(_game, (int)PlayerColor.Light)); //PlayerColor.Light
-            _game.Points.Add((int)PlayerColor.Dark, new BoardPointModel(_game, (int)PlayerColor.Dark)); //PlayerColor.Dark
+            _game.Points.Add((int)PlayerColor.Light, new PointModel(_game, (int)PlayerColor.Light));
+            _game.Points.Add((int)PlayerColor.Dark, new PointModel(_game, (int)PlayerColor.Dark));
 
         }
 
@@ -64,7 +64,7 @@ namespace BackgammonBlazor.Models.Game
             {
                 for (int i = 0; i < numCheckers; i++)
                 {
-                    BoardPointModel point = _game.GetPoint(pointNumber);
+                    PointModel point = _game.GetPoint(pointNumber);
 
                     CheckerModel checker = new(_game, point, playerColor);
 

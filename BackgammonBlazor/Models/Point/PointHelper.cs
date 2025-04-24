@@ -1,9 +1,9 @@
 ﻿using BackgammonBlazor.Models;
 
-namespace BackgammonBlazor.Models.BoardPoint
+namespace BackgammonBlazor.Models.Point
 {
     //TODO: Better location for this?
-    public static class BoardPointHelper
+    public static class PointHelper
     {
         private static readonly int[] _pointOrder = [13, 14, 15, 16, 17, 18, 12, 11, 10, 9, 8, 7, 19, 20, 21, 22, 23, 24, 6, 5, 4, 3, 2, 1];
 

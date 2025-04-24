@@ -1,4 +1,4 @@
-﻿using BackgammonBlazor.Models.BoardPoint;
+﻿using BackgammonBlazor.Models.Point;
 using BackgammonBlazor.Models.Checker;
 using BackgammonBlazor.Models.Game;
 
@@ -17,7 +17,7 @@ namespace BackgammonBlazor.Models.Player
         private const int _initialPipCount = 167;
 
         #region Public Methods
-        public bool HasCheckersOnPoint(BoardPointModel point)
+        public bool HasCheckersOnPoint(PointModel point)
             => point.HasCheckersOfPlayer(this);
 
         public bool HasCheckersOnBar()

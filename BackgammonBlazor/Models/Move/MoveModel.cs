@@ -1,109 +1,62 @@
-﻿using BackgammonBlazor.Models.BoardPoint;
+﻿using BackgammonBlazor.Models.Point;
 using BackgammonBlazor.Models.Checker;
 using BackgammonBlazor.Models.Game;
 using BackgammonBlazor.Models.Player;
 
 namespace BackgammonBlazor.Models.Move
 {
-    public class MoveModel(GameModel gameModel, BoardPointModel origin, BoardPointModel destination, int consumedDiceValue = 0)
+    public class MoveModel
     {
         #region Public Properties
-        //TODO: Explore making these properties private with public method access and editing
-        public GameModel GameModel { get; private set; } = gameModel;
+        public PointModel Origin { get; private set; }
 
-        public BoardPointModel Origin { get; private set; } = origin;
+        public PointModel Destination { get; private set; }
 
-        public BoardPointModel Destination { get; private set; } = destination;
+        public int ConsumedDiceValue { get; private set; }
 
-        public int ConsumedDiceValue { get; set; } = consumedDiceValue;
+        public MoveModel HittingMove { get; private set; }
         #endregion Public Properties
 
-        private MoveModel _hittingMove;
+        #region Private Fields
+        private readonly GameModel _game;
+        private readonly MoveValidator _validator;
+        private readonly MoveProcessor _processor;
+        #endregion Private Fields
 
-        public MoveModel(GameModel gameModel, BoardPointModel origin, int consumedDiceValue) : this(gameModel, origin, null, consumedDiceValue)
+        #region Constructor
+        public MoveModel(
+            GameModel game,
+            int consumedDiceValue,
+            PointModel origin,
+            PointModel destination = null)
         {
-            Destination = GetDestinationPoint(origin.PointNumber, consumedDiceValue);
+            _game = game;
+            _validator = new MoveValidator(_game);
+            _processor = new MoveProcessor(_game);
+
+            Origin = origin;
+            Destination = destination ?? CalculateDestinationPoint(origin.PointNumber, consumedDiceValue);
+            ConsumedDiceValue = consumedDiceValue;
         }
-
-        private BoardPointModel GetDestinationPoint(int origin, int consumedDiceValue)
-        {
-            PlayerColor color = GameModel.Hero.PlayerColor;
-            int destination = color == PlayerColor.Light ? origin - consumedDiceValue : origin + consumedDiceValue;
-
-            //If destination is borne off point
-            if (destination < 1 || destination > 24)
-            {
-                return GameModel.GetBorneOffPoint(color);
-            }
-
-            return GameModel.GetPoint(destination);
-        }
+        #endregion Constructor
 
         #region Public Methods
-        public void Process()
+        public bool IsValid() => _validator.IsValidMove(this);
+
+        public void Process() => _processor.ProcessMove(this);
+
+        public void Undo() => _processor.UndoMove(Reverse());
+
+        public void SetHittingMove(PointModel origin, PointModel bar)
         {
-            if (IsHit())
-            {
-                _hittingMove ??= new MoveModel(GameModel, Destination, GetBarOfHitChecker());
-
-                _hittingMove.Process();
-            }
-
-            CheckerModel checkerToMove = GetCheckerToMove();
-            checkerToMove.Point = Destination;
-            Origin.Checkers.Remove(checkerToMove);
-            Destination.Checkers.Add(checkerToMove);
+            HittingMove = new(_game, -1, origin, bar);
         }
-
-        public bool IsHit()
-        {
-            //This move is composed with a hitting move
-            if (_hittingMove != null)
-            {
-                return true;
-            }
-
-            //Destination has a checker to hit from the opposing player
-            if (Destination.IsHittable() && GetCheckerToMove().PlayerColor != GetHitChecker().PlayerColor)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        internal bool IsValidBearOff()
-        {
-            if (!GameModel.Hero.HasAllCheckersInHomeBoard())
-            {
-                return false;
-            }
-
-            if (IsPerfectBearOff())
-            {
-                return true;
-            }
-
-            if (GameModel.Hero.CanMoveCheckerOnHigherPointNumber(Origin.PointNumber, ConsumedDiceValue))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool IsPerfectBearOff()
-            => ConsumedDiceValue == (GameModel.Hero.PlayerColor == PlayerColor.Light ? Origin.PointNumber : 25 - Origin.PointNumber);
-
-        public bool IsBearingOff()
-            => Destination == GameModel.GetBorneOffPoint(PlayerColor.Light) ||
-            Destination == GameModel.GetBorneOffPoint(PlayerColor.Dark);
 
         public MoveModel Reverse()
         {
             if (IsHit())
             {
-                (Origin, Destination, _hittingMove.Origin, _hittingMove.Destination) = (_hittingMove.Destination, _hittingMove.Origin, Destination, Origin);
+                (Origin, Destination, HittingMove.Origin, HittingMove.Destination) = (HittingMove.Destination, HittingMove.Origin, Destination, Origin);
             }
             else
             {
@@ -113,14 +66,40 @@ namespace BackgammonBlazor.Models.Move
             return this;
         }
 
-        public CheckerModel GetCheckerToMove()
-            => Origin.Checkers.First();
 
-        public CheckerModel GetHitChecker()
-            => Destination.Checkers.First();
+        public bool IsHit()
+        {
+            //This move is composed with a hitting move
+            if (HittingMove != null)
+            {
+                return true;
+            }
 
-        public BoardPointModel GetBarOfHitChecker()
-            => GameModel.GetBarPoint(GetHitChecker().PlayerColor);
+            //Destination is hittable and has villains checker
+            if (Destination.IsHittable() && Origin.Checkers.First().PlayerColor != Destination.Checkers.First().PlayerColor)
+            {
+                return true;
+            }
+
+            return false;
+        }
         #endregion Public Methods
+
+        #region Private Methods
+        private PointModel CalculateDestinationPoint(int origin, int consumedDiceValue)
+        {
+            PlayerColor playerColor = _game.Hero.PlayerColor;
+
+            int destination = playerColor == PlayerColor.Light ? origin - consumedDiceValue : origin + consumedDiceValue;
+
+            //If destination is borne off point
+            if (destination < 1 || destination > 24)
+            {
+                return _game.GetBorneOffPoint(playerColor);
+            }
+
+            return _game.GetPoint(destination);
+        }
+        #endregion Private Methods
     }
 }

@@ -18,7 +18,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public GameModel GameModel { get; set; }
+    public GameModel Game { get; set; }
 
     private List<int> _displayValues;
     private List<int> _usedValues;
@@ -41,19 +41,16 @@
     private void ReverseOrderOfValues()
     {
         _isAscOrder = !_isAscOrder;
-
+        Game.Dice.ReverseValueOrder();
         UpdateValueCollections();
         StateHasChanged();
     }
 
     private void UpdateValueCollections()
     {
-        _displayValues = OrderDisplayValues(GameModel.Dice.GetAllValues()).ToList();
-        _usedValues = GameModel.Dice.GetUsedValues().ToList();
+        _displayValues = Game.Dice.GetAllValues().ToList();
+        _usedValues = Game.Dice.GetUsedValues().ToList();
     }
-
-    private IEnumerable<int> OrderDisplayValues(IEnumerable<int> values)
-        => _isAscOrder ? values.OrderBy(v => v) : values.OrderByDescending(v => v);
 
     private RenderFragment RenderDice(int value, bool isUsed) => (__builder) =>
     {

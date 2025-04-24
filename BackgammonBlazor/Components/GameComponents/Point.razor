@@ -1,10 +1,10 @@
-﻿@using BackgammonBlazor.Models.BoardPoint
+﻿@using BackgammonBlazor.Models.Point
 @using BackgammonBlazor.Models.Game
 @inject GameModel Game
 @inject GameEventManager GameEventManager
 @rendermode InteractiveServer
 
-<div class="point-container" @onclick="TryMove">
+<div class="point-container" @onclick="Move">
     @RenderBoardPoint()
     @RenderPointCheckers()
 </div>
@@ -13,7 +13,7 @@
     [Parameter, EditorRequired]
     public int PointNumber { get; set; }
 
-    private BoardPointModel _point;
+    private PointModel _point;
 
     protected override void OnInitialized()
     {
@@ -45,9 +45,9 @@
         </div>
     };
 
-    private void TryMove()
+    private void Move()
     {
-        //TODO: Check if dice value is empty after trymove & updateboard
+        //TODO: Check if dice value is empty after move & updateboard
         //  because if the game is complete and there dice rolls left, 
         //  the player can't finish their turn.
         if (Game.TryMove(_point))
